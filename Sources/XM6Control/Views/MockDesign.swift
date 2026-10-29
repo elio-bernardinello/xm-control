@@ -529,11 +529,12 @@ struct MockMark: View {
 
 extension ListeningMode {
     /// The one-word tile captions of the mockups.
-    var tileLabel: String {
+    var tileLabel: String { displayTile }
+    var displayTile: String {
         switch self {
         case .standard: return "Standard"
-        case .backgroundMusic: return "Fond"
-        case .cinema: return "Cinéma"
+        case .backgroundMusic: return L("Fond", "BGM")
+        case .cinema: return L("Cinéma", "Cinema")
         }
     }
 }

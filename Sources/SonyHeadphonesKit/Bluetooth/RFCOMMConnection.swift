@@ -97,11 +97,11 @@ public final class RFCOMMConnection: NSObject, HeadphonesTransport {
             guard self.retiredSessions.count < self.maximumRetiredSessions else {
                 let code = self.retiredSessions.values.compactMap(\.closeFailureCode).first
                     .map { " Dernier code de fermeture : \($0)." } ?? ""
-                self.onEvent?(.failed("macOS n’a pas terminé plusieurs opérations Bluetooth précédentes. Patientez puis réessayez ; si le problème persiste, quittez et rouvrez XM Control." + code))
+                self.onEvent?(.failed(L("macOS n’a pas terminé plusieurs opérations Bluetooth précédentes. Patientez puis réessayez ; si le problème persiste, quittez et rouvrez XM Control.", "macOS did not finish several previous Bluetooth operations. Wait and try again; if it persists, quit and reopen XM Control.") + code))
                 return
             }
             guard let device = Self.device(forAddress: address) else {
-                self.onEvent?(.failed("Casque introuvable. Vérifiez son jumelage dans les réglages Bluetooth de macOS."))
+                self.onEvent?(.failed(L("Casque introuvable. Vérifiez son jumelage dans les réglages Bluetooth de macOS.", "Headset not found. Check its pairing in the macOS Bluetooth settings.")))
                 return
             }
             let session = ConnectionSession(device: device, emit: { [weak self] event in
@@ -137,7 +137,7 @@ public final class RFCOMMConnection: NSObject, HeadphonesTransport {
         DispatchQueue.main.async { [weak self] in
             guard let self, self.currentGeneration() == token else { return }
             guard let session = self.session else {
-                self.onEvent?(.failed("Le casque n’est plus connecté. Reconnectez-le avant de réessayer."))
+                self.onEvent?(.failed(L("Le casque n’est plus connecté. Reconnectez-le avant de réessayer.", "The headset is no longer connected. Reconnect it and try again.")))
                 return
             }
             session.write(bytes)
@@ -187,7 +187,7 @@ private final class ConnectionSession: NSObject, IOBluetoothRFCOMMChannelDelegat
             let result = device.openConnection(self)
             if result != kIOReturnSuccess {
                 pendingDeviceCallbacks -= 1
-                fail("Connexion Bluetooth impossible", code: result)
+                fail(L("Connexion Bluetooth impossible", "Bluetooth connection impossible"), code: result)
             }
         }
     }
@@ -226,11 +226,11 @@ private final class ConnectionSession: NSObject, IOBluetoothRFCOMMChannelDelegat
 
     func write(_ bytes: [UInt8]) {
         guard !isRetired, let channel, channel.isOpen() else {
-            fail("Le canal de commande est fermé. Reconnectez le casque")
+            fail(L("Le canal de commande est fermé. Reconnectez le casque", "The command channel is closed. Reconnect the headset"))
             return
         }
         guard !bytes.isEmpty, bytes.count <= Int(UInt16.max), bytes.count <= Int(channel.getMTU()) else {
-            fail("La commande dépasse la capacité du canal Bluetooth", code: kIOReturnBadArgument)
+            fail(L("La commande dépasse la capacité du canal Bluetooth", "The command exceeds the Bluetooth channel capacity"), code: kIOReturnBadArgument)
             return
         }
         let buffer = WriteBuffer(bytes)
@@ -240,7 +240,7 @@ private final class ConnectionSession: NSObject, IOBluetoothRFCOMMChannelDelegat
         if result != kIOReturnSuccess {
             // The SDK guarantees no data was submitted on an immediate error.
             pendingWrites.removeValue(forKey: refcon)
-            fail("Envoi de la commande impossible", code: result)
+            fail(L("Envoi de la commande impossible", "Command could not be sent"), code: result)
         }
     }
 
@@ -251,7 +251,7 @@ private final class ConnectionSession: NSObject, IOBluetoothRFCOMMChannelDelegat
         let result = device.performSDPQuery(self)
         if result != kIOReturnSuccess {
             pendingDeviceCallbacks -= 1
-            fail("La recherche du service Sony n’a pas pu démarrer", code: result)
+            fail(L("La recherche du service Sony n’a pas pu démarrer", "The Sony service search could not start"), code: result)
         }
     }
 
@@ -270,7 +270,7 @@ private final class ConnectionSession: NSObject, IOBluetoothRFCOMMChannelDelegat
         var channelID: BluetoothRFCOMMChannelID = 0
         let status = record.getRFCOMMChannelID(&channelID)
         guard status == kIOReturnSuccess else {
-            fail("Service Sony indisponible. Connectez d’abord le casque comme sortie audio", code: status)
+            fail(L("Service Sony indisponible. Connectez d’abord le casque comme sortie audio", "Sony service unavailable. First connect the headset as an audio output"), code: status)
             return
         }
         var newChannel: IOBluetoothRFCOMMChannel?
@@ -286,7 +286,7 @@ private final class ConnectionSession: NSObject, IOBluetoothRFCOMMChannelDelegat
                 }
             }
             guard !didRetryChannelOpen else {
-                fail("Le canal de commande Sony n’a pas pu s’ouvrir", code: statusOpen)
+                fail(L("Le canal de commande Sony n’a pas pu s’ouvrir", "The Sony command channel could not open"), code: statusOpen)
                 return
             }
             didRetryChannelOpen = true
@@ -297,7 +297,7 @@ private final class ConnectionSession: NSObject, IOBluetoothRFCOMMChannelDelegat
             return
         }
         guard let newChannel else {
-            fail("macOS n’a pas fourni de canal Bluetooth", code: kIOReturnError)
+            fail(L("macOS n’a pas fourni de canal Bluetooth", "macOS did not provide a Bluetooth channel"), code: kIOReturnError)
             return
         }
         channel = newChannel
@@ -309,7 +309,7 @@ private final class ConnectionSession: NSObject, IOBluetoothRFCOMMChannelDelegat
             pendingDeviceCallbacks = max(0, pendingDeviceCallbacks - 1)
             defer { releaseIfFinished() }
             guard !isRetired else { return }
-            guard status == kIOReturnSuccess else { fail("Connexion au casque impossible", code: status); return }
+            guard status == kIOReturnSuccess else { fail(L("Connexion au casque impossible", "Connection to the headset impossible"), code: status); return }
             beginServiceDiscovery()
         }
     }
@@ -321,14 +321,14 @@ private final class ConnectionSession: NSObject, IOBluetoothRFCOMMChannelDelegat
             defer { releaseIfFinished() }
             guard !isRetired else { return }
             guard status == kIOReturnSuccess else {
-                fail("Recherche du service Sony impossible. Vérifiez la connexion audio du casque", code: status)
+                fail(L("Recherche du service Sony impossible. Vérifiez la connexion audio du casque", "Sony service search failed. Check the headset audio connection"), code: status)
                 return
             }
             if let record = serviceRecord() { openChannel(record: record) }
             else if (device.services as? [IOBluetoothSDPServiceRecord])?.isEmpty ?? true {
-                fail("macOS ne signale aucun service. Autorisez XM Control dans Réglages Système → Confidentialité et sécurité → Bluetooth")
+                fail(L("macOS ne signale aucun service. Autorisez XM Control dans Réglages Système → Confidentialité et sécurité → Bluetooth", "macOS reports no service. Allow XM Control in System Settings → Privacy & Security → Bluetooth"))
             } else {
-                fail("Le service de commande Sony n’est pas disponible. Connectez le casque comme sortie audio puis réessayez")
+                fail(L("Le service de commande Sony n’est pas disponible. Connectez le casque comme sortie audio puis réessayez", "The Sony command service is unavailable. Connect the headset as an audio output, then try again"))
             }
         }
     }
@@ -336,7 +336,7 @@ private final class ConnectionSession: NSObject, IOBluetoothRFCOMMChannelDelegat
     func rfcommChannelOpenComplete(_ callbackChannel: IOBluetoothRFCOMMChannel!, status error: IOReturn) {
         DispatchQueue.main.async { [self] in
             guard !isRetired, callbackChannel === channel else { return }
-            guard error == kIOReturnSuccess else { fail("Ouverture du canal Sony impossible", code: error); return }
+            guard error == kIOReturnSuccess else { fail(L("Ouverture du canal Sony impossible", "Sony channel opening impossible"), code: error); return }
             // Preserve the established first-write settling period, tied to this
             // exact delegate generation AND channel rather than a future session.
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
@@ -360,7 +360,7 @@ private final class ConnectionSession: NSObject, IOBluetoothRFCOMMChannelDelegat
         DispatchQueue.main.async { [self] in
             guard callbackChannel === channel, let refcon, pendingWrites.removeValue(forKey: refcon) != nil else { return }
             guard !isRetired else { return }
-            if error != kIOReturnSuccess { fail("La transmission Bluetooth a échoué", code: error) }
+            if error != kIOReturnSuccess { fail(L("La transmission Bluetooth a échoué", "Bluetooth transmission failed"), code: error) }
         }
     }
 

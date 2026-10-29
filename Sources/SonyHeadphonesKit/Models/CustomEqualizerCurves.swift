@@ -27,8 +27,8 @@ public enum CustomEqualizerCurve: String, CaseIterable, Identifiable {
 
     public var detail: String {
         switch self {
-        case .film: return "Basses + présence, pour films et séries."
-        case .voix: return "Dialogues et podcasts mis en avant."
+        case .film: return L("Basses + présence, pour films et séries.", "Bass + presence, for movies and series.")
+        case .voix: return L("Dialogues et podcasts mis en avant.", "Dialogue and podcasts brought forward.")
         }
     }
 }

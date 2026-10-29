@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import SonyHeadphonesKit
 
 /// App-level preferences, as opposed to headphone settings.
 ///
@@ -10,6 +11,7 @@ import AppKit
 @MainActor
 final class AppSettings: ObservableObject {
     static let menuBarOnlyKey = "menuBarOnly"
+    static let languageKey = "appLanguage"
 
     /// Readable before the first `AppSettings` instance exists, so the app can pick
     /// its activation policy during launch instead of showing a Dock icon first.
@@ -27,6 +29,21 @@ final class AppSettings: ObservableObject {
         }
     }
 
+    /// Interface language. Changing it re-renders every observing view via the
+    /// controller (see `noteLanguageChanged`); SonyHeadphonesKit reads the same
+    /// key through `AppEnglish`, so device messages follow too.
+    @Published var language: AppLanguage {
+        didSet {
+            guard oldValue != language else { return }
+            if language == .system {
+                UserDefaults.standard.removeObject(forKey: Self.languageKey)
+            } else {
+                UserDefaults.standard.set(language.rawValue, forKey: Self.languageKey)
+            }
+            AppServices.shared.controller.noteLanguageChanged()
+        }
+    }
+
     /// Opens the standard macOS Settings window from the menu bar panel as well.
     static func openPreferences() {
         NSApp.activate(ignoringOtherApps: true)
@@ -37,6 +54,8 @@ final class AppSettings: ObservableObject {
 
     init() {
         menuBarOnly = UserDefaults.standard.bool(forKey: Self.menuBarOnlyKey)
+        let stored = UserDefaults.standard.string(forKey: Self.languageKey)
+        language = AppLanguage(rawValue: stored ?? "system") ?? .system
     }
 
     /// Pushes the current preference onto `NSApp`. Call once at launch, and it runs

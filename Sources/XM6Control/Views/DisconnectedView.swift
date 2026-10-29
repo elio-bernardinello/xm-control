@@ -14,12 +14,12 @@ struct DisconnectedView: View {
                 .font(MockType.largeTitle)
                 .foregroundStyle(Mock.ink)
                 .padding(.top, 26)
-            Text("\(controller.modelLabel) · Casque déconnecté")
+            Text("\(controller.modelLabel) · \(L("Casque déconnecté", "Headset disconnected"))")
                 .font(MockType.headingRegular)
                 .foregroundStyle(Mock.ink2)
                 .padding(.top, 4)
             if controller.xmCandidates.count > 1 {
-                Text("Plusieurs casques XM jumelés : choisissez le vôtre dans Réglages.")
+                Text(L("Plusieurs casques XM jumelés : choisissez le vôtre dans Réglages.", "Several XM headsets paired: pick yours in Settings."))
                     .font(MockType.body)
                     .foregroundStyle(Mock.ink2)
                     .multilineTextAlignment(.center)
@@ -30,7 +30,7 @@ struct DisconnectedView: View {
             Button {
                 controller.autoConnect()
             } label: {
-                Text(controller.personalHeadset == nil ? "Rechercher mon casque" : "Se connecter")
+                Text(controller.personalHeadset == nil ? L("Rechercher mon casque", "Find my headset") : L("Se connecter", "Connect"))
                     .font(MockType.heading)
                     .foregroundStyle(Mock.primaryText)
                     .padding(.horizontal, 26)
@@ -51,7 +51,7 @@ struct DisconnectedView: View {
                     .padding(.top, Mock.gap)
             }
             if controller.personalHeadset == nil || controller.lastError != nil {
-                Button("Ouvrir les réglages Bluetooth") {
+                Button(L("Ouvrir les réglages Bluetooth", "Open Bluetooth settings")) {
                     if let url = URL(string: "x-apple.systempreferences:com.apple.BluetoothSettings") {
                         NSWorkspace.shared.open(url)
                     }
@@ -102,12 +102,12 @@ struct ConnectingView: View {
                 .padding(.top, 22)
             HStack(spacing: 8) {
                 ProgressView().controlSize(.small)
-                Text(controller.connectionState == .initializing ? "Lecture de vos réglages…" : "Connexion à votre casque…")
+                Text(controller.connectionState == .initializing ? L("Lecture de vos réglages…", "Reading your settings…") : L("Connexion à votre casque…", "Connecting to your headset…"))
                     .font(MockType.headingRegular)
                     .foregroundStyle(Mock.ink2)
             }
             .padding(.top, 6)
-            Button("Annuler la connexion") { controller.disconnect() }
+            Button(L("Annuler la connexion", "Cancel connection")) { controller.disconnect() }
                 .buttonStyle(.plain)
                 .font(MockType.bodyStrong)
                 .foregroundStyle(Mock.accent)

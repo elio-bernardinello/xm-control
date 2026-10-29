@@ -80,20 +80,20 @@ struct DashboardView: View {
                 pageIcon("arrow.clockwise")
             }
             .buttonStyle(.plain)
-            .help("Actualiser les réglages du casque")
-            .accessibilityLabel("Actualiser les réglages du casque")
+            .help(L("Actualiser les réglages du casque", "Refresh headset settings"))
+            .accessibilityLabel(L("Actualiser les réglages du casque", "Refresh headset settings"))
             Menu {
                 AppPreferencesLink()
                 Divider()
-                Button("Déconnecter le casque", role: .destructive) { controller.disconnect() }
+                Button(L("Déconnecter le casque", "Disconnect headset"), role: .destructive) { controller.disconnect() }
             } label: {
                 pageIcon("ellipsis")
             }
             .menuStyle(.borderlessButton)
             .menuIndicator(.hidden)
             .fixedSize()
-            .help("Options")
-            .accessibilityLabel("Options d’XM Control")
+            .help(L("Options", "Options"))
+            .accessibilityLabel(L("Options d’XM Control", "XM Control options"))
         }
     }
 
@@ -107,8 +107,8 @@ struct DashboardView: View {
     }
 
     private var statusLine: String {
-        var parts = ["Connecté"]
-        if let battery = controller.battery { parts.append("batterie \(battery.level) %") }
+        var parts = [L("Connecté", "Connected")]
+        if let battery = controller.battery { parts.append(L("batterie \(battery.level) %", "battery \(battery.level)%")) }
         if let source = controller.devices?.first(where: { $0.isPlayback })?.name { parts.append(source) }
         return parts.joined(separator: " · ")
     }
@@ -129,10 +129,10 @@ struct DashboardView: View {
             .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(mode?.frenchLabel ?? "Mode d’écoute")
+                Text(mode?.displayLabel ?? L("Mode d’écoute", "Listening mode"))
                     .font(MockType.largeTitle)
                     .foregroundStyle(Mock.ink)
-                Text(mode?.detail ?? "À vous de choisir.")
+                Text(mode?.displayDetail ?? L("À vous de choisir.", "Your call."))
                     .font(MockType.headingRegular)
                     .foregroundStyle(Mock.ink2)
                     .padding(.bottom, Mock.gap)
@@ -165,10 +165,10 @@ struct DashboardView: View {
 
     private var roomSelector: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Distance des enceintes")
+            Text(L("Distance des enceintes", "Speaker distance"))
                 .font(MockType.bodyStrong)
                 .foregroundStyle(Mock.ink2)
-            CompactSegment(items: BGMRoomSize.allCases.map { ($0, $0.frenchLabel) },
+            CompactSegment(items: BGMRoomSize.allCases.map { ($0, $0.displayLabel) },
                            selection: controller.requestedBGMRoomSize ?? controller.bgmRoomSize) {
                 controller.setBGMRoomSize($0)
             }
@@ -177,9 +177,9 @@ struct DashboardView: View {
 
     private var stats: some View {
         HStack(spacing: 0) {
-            statItem("Batterie", controller.battery.map { "\($0.level) %" } ?? "—")
-            statItem("Bruit", noiseLabel)
-            statItem("Source", controller.devices?.first(where: { $0.isPlayback })?.name ?? "—")
+            statItem(L("Batterie", "Battery"), controller.battery.map { "\($0.level) %" } ?? "—")
+            statItem(L("Bruit", "Noise"), noiseLabel)
+            statItem(L("Source", "Source"), controller.devices?.first(where: { $0.isPlayback })?.name ?? "—")
         }
         .padding(.top, 14)
         .overlay(alignment: .top) { Rectangle().fill(Mock.hair).frame(height: 0.5) }
@@ -202,9 +202,9 @@ struct DashboardView: View {
 
     private var noiseLabel: String {
         switch ambient?.mode {
-        case .noiseCancelling: return "Réduction"
-        case .ambientSound: return "Ambiant"
-        case .off: return "Désactivé"
+        case .noiseCancelling: return L("Réduction", "Noise cancelling")
+        case .ambientSound: return L("Ambiant", "Ambient")
+        case .off: return L("Désactivé", "Off")
         case nil: return "—"
         }
     }
@@ -212,11 +212,11 @@ struct DashboardView: View {
     // MARK: - Cards
 
     private var noiseCard: some View {
-        MockCard(title: "Contrôle du bruit", icon: "ear") {
+        MockCard(title: L("Contrôle du bruit", "Noise control"), icon: "ear") {
             CompactSegment(items: [
-                (AmbientSoundMode.noiseCancelling, "Réduction"),
-                (AmbientSoundMode.ambientSound, "Ambiant"),
-                (AmbientSoundMode.off, "Désactivé"),
+                (AmbientSoundMode.noiseCancelling, L("Réduction", "Noise cancelling")),
+                (AmbientSoundMode.ambientSound, L("Ambiant", "Ambient")),
+                (AmbientSoundMode.off, L("Désactivé", "Off")),
             ], selection: ambient?.mode) { choice in
                 var updated = ambient ?? AmbientSoundState()
                 updated.mode = choice
@@ -232,9 +232,9 @@ struct DashboardView: View {
                         updated.level = level
                         controller.setAmbientSound(updated)
                     }
-                    .accessibilityLabel("Niveau du son ambiant")
+                    .accessibilityLabel(L("Niveau du son ambiant", "Ambient sound level"))
                     HStack {
-                        Text("Niveau ambiant")
+                        Text(L("Niveau ambiant", "Ambient level"))
                             .font(MockType.caption)
                             .foregroundStyle(Mock.ink3)
                         Spacer()
@@ -244,7 +244,7 @@ struct DashboardView: View {
                             .foregroundStyle(Mock.ink3)
                     }
                 }
-                MockToggleRow(label: "Privilégier les voix", isOn: state.focusOnVoice) { on in
+                MockToggleRow(label: L("Privilégier les voix", "Prioritize voices"), isOn: state.focusOnVoice) { on in
                     var updated = state
                     updated.focusOnVoice = on
                     controller.setAmbientSound(updated)
@@ -254,8 +254,8 @@ struct DashboardView: View {
     }
 
     private var sourceCard: some View {
-        MockCard(title: "Source audio", icon: "laptopcomputer.and.iphone",
-                 hint: controller.devices.map { "\($0.count) appareil\($0.count > 1 ? "s" : "")" }) {
+        MockCard(title: L("Source audio", "Audio source"), icon: "laptopcomputer.and.iphone",
+                 hint: controller.devices.map { L("\($0.count) appareil\($0.count > 1 ? "s" : "")", "\($0.count) device\($0.count > 1 ? "s" : "")") }) {
             if let devices = controller.devices, !devices.isEmpty {
                 VStack(spacing: 0) {
                     ForEach(Array(devices.enumerated()), id: \.element.id) { index, device in
@@ -265,7 +265,7 @@ struct DashboardView: View {
                 }
                 sourceFooter
             } else if controller.initialStateTimedOut {
-                Text("Liste des appareils non communiquée par le casque.")
+                Text(L("Liste des appareils non communiquée par le casque.", "Device list not reported by the headset."))
                     .font(MockType.body)
                     .foregroundStyle(Mock.ink2)
             } else {
@@ -279,27 +279,27 @@ struct DashboardView: View {
             if controller.isSourceSwitching {
                 HStack(spacing: 8) {
                     ProgressView().controlSize(.small)
-                    Text("Basculement en cours…")
+                    Text(L("Basculement en cours…", "Switching…"))
                         .font(MockType.caption)
                         .foregroundStyle(Mock.ink2)
                 }
                 .padding(.top, 8)
-                .accessibilityLabel("Basculement de la source audio en cours")
+                .accessibilityLabel(L("Basculement de la source audio en cours", "Audio source switching in progress"))
             }
             if let message = controller.sourceFailure {
                 OperationFailureLine(message: message)
                     .padding(.top, 8)
-                Text("Si l’iPhone rejoue aussitôt, mettez-le en pause puis touchez Utiliser à nouveau.")
+                Text(L("Si l’autre appareil rejoue aussitôt, mettez-le en pause puis touchez Utiliser à nouveau.", "If the other device resumes right away, pause it, then tap Use again."))
                     .font(MockType.caption)
                     .foregroundStyle(Mock.ink3)
                     .fixedSize(horizontal: false, vertical: true)
-                Button("Actualiser la liste") { controller.refreshDevices() }
+                Button(L("Actualiser la liste", "Refresh list")) { controller.refreshDevices() }
                     .buttonStyle(.plain)
                     .font(MockType.captionStrong)
                     .foregroundStyle(Mock.midnight)
                     .padding(.top, 2)
             } else if !controller.isSourceSwitching {
-                Button("Actualiser la liste") { controller.refreshDevices() }
+                Button(L("Actualiser la liste", "Refresh list")) { controller.refreshDevices() }
                     .buttonStyle(.plain)
                     .font(MockType.caption)
                     .foregroundStyle(Mock.ink3)
@@ -324,13 +324,13 @@ struct DashboardView: View {
                     .foregroundStyle(device.isConnected ? Mock.ink : Mock.ink3)
                     .lineLimit(1)
                     .truncationMode(.middle)
-                Text(device.isPlayback ? "Lecture en cours" : (device.isConnected ? "Connecté" : "Jumelé, déconnecté"))
+                Text(device.isPlayback ? L("Lecture en cours", "Now playing") : (device.isConnected ? L("Connecté", "Connected") : L("Jumelé, déconnecté", "Paired, disconnected")))
                     .font(MockType.caption)
                     .foregroundStyle(Mock.ink3)
             }
             Spacer(minLength: 8)
             if device.isPlayback {
-                Text("Actif")
+                Text(L("Actif", "Active"))
                     .font(MockType.captionStrong)
                     .foregroundStyle(Mock.midnight)
                     .padding(.horizontal, 9).padding(.vertical, 4)
@@ -338,12 +338,12 @@ struct DashboardView: View {
             } else if isTarget {
                 HStack(spacing: 6) {
                     ProgressView().controlSize(.small)
-                    Text("Basculement…")
+                    Text(L("Basculement…", "Switching…"))
                         .font(MockType.captionStrong)
                         .foregroundStyle(Mock.ink2)
                 }
             } else if canSwitch {
-                Button("Utiliser") { controller.switchPlayback(to: device) }
+                Button(L("Utiliser", "Use")) { controller.switchPlayback(to: device) }
                     .buttonStyle(.plain)
                     .font(MockType.captionStrong)
                     .foregroundStyle(Mock.midnight)
@@ -356,21 +356,21 @@ struct DashboardView: View {
     }
 
     private var headsetCard: some View {
-        MockCard(title: "Casque", icon: "headphones", hint: "Détection du port") {
+        MockCard(title: L("Casque", "Headset"), icon: "headphones", hint: L("Détection du port", "Wear detection")) {
             if let pause = controller.requestedPauseWhenTakenOff ?? controller.pauseWhenTakenOff {
-                MockToggleRow(label: "Pause au retrait du casque", isOn: pause, first: true) {
+                MockToggleRow(label: L("Pause au retrait du casque", "Pause when taken off"), isOn: pause, first: true) {
                     controller.setPauseWhenTakenOff($0)
                 }
             } else {
-                pendingRow("Pause au retrait du casque", first: true)
+                pendingRow(L("Pause au retrait du casque", "Pause when taken off"), first: true)
             }
             if let autoOff = controller.requestedAutomaticPowerOff ?? controller.automaticPowerOff {
-                MockRow(label: "Extinction automatique") {
+                MockRow(label: L("Extinction automatique", "Auto power off")) {
                     MockValueMenu(selection: autoOff, options: AutomaticPowerOffMode.allCases,
-                                  label: { $0.frenchLabel }) { controller.setAutomaticPowerOff($0) }
+                                  label: { $0.displayLabel }) { controller.setAutomaticPowerOff($0) }
                 }
             } else {
-                pendingRow("Extinction automatique")
+                pendingRow(L("Extinction automatique", "Auto power off"))
             }
         }
     }
@@ -382,30 +382,30 @@ struct DashboardView: View {
     }
 
     private var conversationCard: some View {
-        MockCard(title: "Conversation", icon: "mic", hint: "Speak-to-Chat") {
+        MockCard(title: L("Conversation", "Conversation"), icon: "mic", hint: "Speak-to-Chat") {
             let enabled = controller.requestedSpeakToChatEnabled ?? controller.speakToChatEnabled
             let config = controller.requestedSpeakToChatConfig ?? controller.speakToChatConfig
             if let enabled {
-                MockToggleRow(label: "Pause quand vous parlez", isOn: enabled, first: true) {
+                MockToggleRow(label: L("Pause quand vous parlez", "Pause when you speak"), isOn: enabled, first: true) {
                     controller.setSpeakToChatEnabled($0)
                 }
                 if enabled, let config {
                     HStack(alignment: .top, spacing: 32) {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Sensibilité")
+                            Text(L("Sensibilité", "Sensitivity"))
                                 .font(MockType.caption)
                                 .foregroundStyle(Mock.ink2)
                             MockValueMenu(selection: config.sensitivity, options: SpeakToChatSensitivity.allCases,
-                                          label: { $0.frenchLabel }) {
+                                          label: { $0.displayLabel }) {
                                 controller.setSpeakToChatConfig(SpeakToChatConfigState(sensitivity: $0, timeout: config.timeout))
                             }
                         }
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("Reprendre après")
+                            Text(L("Reprendre après", "Resume after"))
                                 .font(MockType.caption)
                                 .foregroundStyle(Mock.ink2)
                             MockValueMenu(selection: config.timeout, options: SpeakToChatTimeout.allCases,
-                                          label: { $0.frenchLabel }) {
+                                          label: { $0.displayLabel }) {
                                 controller.setSpeakToChatConfig(SpeakToChatConfigState(sensitivity: config.sensitivity, timeout: $0))
                             }
                         }
@@ -413,7 +413,7 @@ struct DashboardView: View {
                     }
                     .padding(.top, 4)
                 } else if enabled {
-                    Text("Options de conversation non communiquées par le casque.")
+                    Text(L("Options de conversation non communiquées par le casque.", "Conversation options not reported by the headset."))
                         .font(MockType.caption)
                         .foregroundStyle(Mock.ink2)
                 }
@@ -430,9 +430,9 @@ struct DashboardView: View {
         let bands = state?.bands ?? []
         let custom = state?.presetCode == EqualizerPreset.custom.rawValue
         let complete = bands.count == SonyCommands.defaultBandCount
-        return MockCard(title: "Égaliseur", icon: "slider.vertical.3") {
+        return MockCard(title: L("Égaliseur", "Equalizer"), icon: "slider.vertical.3") {
             MockValueMenu(selection: state?.preset, options: EqualizerPreset.allCases,
-                          label: { $0.frenchLabel }) { controller.setEqualizerPreset($0) }
+                          label: { $0.displayLabel }) { controller.setEqualizerPreset($0) }
             HStack(spacing: 8) {
                 ForEach(CustomEqualizerCurve.allCases) { curve in
                     Button {
@@ -450,8 +450,8 @@ struct DashboardView: View {
                         .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Mock.well))
                     }
                     .buttonStyle(.plain)
-                    .help("Appliquer la courbe \(curve.rawValue) : \(curve.detail)")
-                    .accessibilityLabel("Appliquer l’égaliseur \(curve.rawValue)")
+                    .help(L("Appliquer la courbe \(curve.rawValue) : \(curve.detail)", "Apply the \(curve.rawValue) curve: \(curve.detail)"))
+                    .accessibilityLabel(L("Appliquer l’égaliseur \(curve.rawValue)", "Apply the \(curve.rawValue) equalizer"))
                 }
             }
             .padding(.top, 8)
@@ -466,7 +466,7 @@ struct DashboardView: View {
                                     controller.setEqualizerBands(updated)
                                 }
                                 .frame(height: 84)
-                                .accessibilityLabel("Bande \(Self.bandLabels.indices.contains(index) ? Self.bandLabels[index] : "\(index + 1)") hertz")
+                                .accessibilityLabel(L("Bande \(Self.bandLabels.indices.contains(index) ? Self.bandLabels[index] : "\(index + 1)") hertz", "Band \(Self.bandLabels.indices.contains(index) ? Self.bandLabels[index] : "\(index + 1)") hertz"))
                                 Text(Self.bandLabels.indices.contains(index) ? Self.bandLabels[index] : "")
                                     .font(MockType.caption)
                                     .foregroundStyle(Mock.ink2)
@@ -476,8 +476,8 @@ struct DashboardView: View {
                     }
                 } else {
                     Text(custom
-                         ? "La courbe n’a pas encore été communiquée par le casque."
-                         : "Choisissez « Personnalisé » pour régler les bandes.")
+                         ? L("La courbe n’a pas encore été communiquée par le casque.", "The curve has not been reported by the headset yet.")
+                         : L("Choisissez « Personnalisé » pour régler les bandes.", "Choose “Custom” to adjust the bands."))
                         .font(MockType.body)
                         .foregroundStyle(Mock.ink2)
                         .frame(maxWidth: .infinity, alignment: .leading)

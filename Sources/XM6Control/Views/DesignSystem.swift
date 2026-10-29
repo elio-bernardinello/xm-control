@@ -5,7 +5,7 @@ import SonyHeadphonesKit
 /// Shown in place of a control when the headset did not report its state.
 struct StateNotReportedBanner: View {
     var body: some View {
-        Label("État non communiqué par le casque. Les réglages restent disponibles.", systemImage: "info.circle")
+        Label(L("État non communiqué par le casque. Les réglages restent disponibles.", "Status not reported by the headset. Settings stay available."), systemImage: "info.circle")
             .font(MockType.caption)
             .foregroundStyle(Mock.ink2)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -15,7 +15,7 @@ struct StateNotReportedBanner: View {
 /// Opens the application's own preferences window.
 struct AppPreferencesLink: View {
     var body: some View {
-        Button("Réglages de l’application…") { PreferencesWindowController.shared.show() }
+        Button(L("Réglages de l’application…", "App settings…")) { PreferencesWindowController.shared.show() }
     }
 }
 

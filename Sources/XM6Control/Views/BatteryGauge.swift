@@ -100,7 +100,7 @@ struct BatteryGauge: View {
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Batterie à \(level) pour cent\(isCharging ? ", en charge" : "")")
+        .accessibilityLabel(L("Batterie à \(level) pour cent\(isCharging ? ", en charge" : "")", "Battery at \(level) percent\(isCharging ? ", charging" : "")"))
     }
 }
 

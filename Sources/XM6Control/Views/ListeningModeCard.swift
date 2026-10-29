@@ -26,21 +26,21 @@ struct SyncIndicator: View {
         }
         .frame(width: 16, height: 16)
         .animation(reduceMotion ? nil : Motion.hover, value: isSyncing)
-        .help("Application du réglage…")
+        .help(L("Application du réglage…", "Applying setting…"))
             .accessibilityHidden(true)
             .onChange(of: controller.listeningModeOperation) { operation in
                 switch operation {
-                case .pending: StatusAnnouncement.post("Application du mode d’écoute en cours.")
+                case .pending: StatusAnnouncement.post(L("Application du mode d’écoute en cours.", "Applying listening mode."))
                 case .failed(let message): StatusAnnouncement.post(message)
                 case .idle:
                     if let mode = controller.listeningMode {
-                        StatusAnnouncement.post("\(mode.frenchLabel), confirmé par le casque.")
+                        StatusAnnouncement.post("\(mode.displayLabel), confirmé par le casque.")
                     }
                 }
             }
             .onChange(of: controller.commandOperation) { operation in
                 switch operation {
-                case .pending: StatusAnnouncement.post("Application des réglages en cours.")
+                case .pending: StatusAnnouncement.post(L("Application des réglages en cours.", "Applying settings."))
                 case .failed(let message): StatusAnnouncement.post(message)
                 case .idle: break
                 }
@@ -54,7 +54,7 @@ struct SyncIndicator: View {
             }
             .onChange(of: controller.confirmedOperationRevision) { _ in
                 if controller.connectionState == .connected {
-                    StatusAnnouncement.post("Réglage confirmé par le casque.")
+                    StatusAnnouncement.post(L("Réglage confirmé par le casque.", "Setting confirmed by the headset."))
                 }
             }
     }

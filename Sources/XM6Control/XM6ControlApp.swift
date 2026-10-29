@@ -22,14 +22,14 @@ struct XM6ControlApp: App {
         // preferences live in their own window (see PreferencesWindowController).
         Settings { EmptyView() }
         .commands {
-            CommandMenu("Mode d’écoute") {
-                Button("Standard") { AppServices.shared.controller.setListeningMode(.standard) }
+            CommandMenu(L("Mode d’écoute", "Listening mode")) {
+                Button(L("Standard", "Standard")) { AppServices.shared.controller.setListeningMode(.standard) }
                     .keyboardShortcut("1", modifiers: [.command, .option])
                     .disabled(AppServices.shared.controller.connectionState != .connected)
-                Button("Musique de fond") { AppServices.shared.controller.setListeningMode(.backgroundMusic) }
+                Button(L("Musique de fond", "Background Music")) { AppServices.shared.controller.setListeningMode(.backgroundMusic) }
                     .keyboardShortcut("2", modifiers: [.command, .option])
                     .disabled(AppServices.shared.controller.connectionState != .connected)
-                Button("Cinéma") { AppServices.shared.controller.setListeningMode(.cinema) }
+                Button(L("Cinéma", "Cinema")) { AppServices.shared.controller.setListeningMode(.cinema) }
                     .keyboardShortcut("3", modifiers: [.command, .option])
                     .disabled(AppServices.shared.controller.connectionState != .connected)
             }
@@ -48,33 +48,33 @@ struct AppPreferencesView: View {
     var body: some View {
         Form {
             Section {
-                TextField("Nom affiché du casque", text: $displayName, prompt: Text("Ex. Casque de Marie, Mon XM6"))
+                TextField(L("Nom affiché du casque", "Headset display name"), text: $displayName, prompt: Text(L("Ex. Casque de Marie, Mon XM6", "E.g. Marie's XM6, My XM6")))
                     .onAppear {
                         displayName = controller.customDisplayName ?? ""
                         ownerName = controller.ownerName ?? ""
                         modelPreference = controller.modelPreference
                     }
                     .onChange(of: displayName) { controller.setCustomDisplayName($0) }
-                TextField("Votre prénom (optionnel)", text: $ownerName, prompt: Text("Ex. Marie"))
+                TextField(L("Votre prénom (optionnel)", "Your first name (optional)"), text: $ownerName, prompt: Text(L("Ex. Marie", "E.g. Marie")))
                     .onChange(of: ownerName) { controller.setOwnerName($0) }
-                Picker("Modèle", selection: $modelPreference) {
-                    ForEach(HeadsetModelPreference.allCases) { Text($0.rawValue).tag($0) }
+                Picker(L("Modèle", "Model"), selection: $modelPreference) {
+                    ForEach(HeadsetModelPreference.allCases) { Text($0.displayLabel).tag($0) }
                 }
                 .onChange(of: modelPreference) { controller.setModelPreference($0) }
-                Text("Le nom affiché apparaît dans la fenêtre et la barre des menus. Le modèle aide à choisir quand plusieurs casques XM sont jumelés. Laissez « Automatique » dans le doute.")
+                Text(L("Le nom affiché apparaît dans la fenêtre et la barre des menus. Le modèle aide à choisir quand plusieurs casques XM sont jumelés. Laissez « Automatique » dans le doute.", "The display name appears in the window and menu bar. The model helps when several XM headsets are paired. Leave Automatic when unsure."))
                     .font(.callout)
                     .foregroundStyle(.secondary)
             } header: {
-                Text("Casque")
+                Text(L("Casque", "Headset"))
             }
             Section {
                 if controller.xmCandidates.isEmpty {
-                    Text("Aucun casque XM détecté parmi les appareils jumelés. Jumeler le casque dans Réglages Système → Bluetooth, puis revenir ici.")
+                    Text(L("Aucun casque XM détecté parmi les appareils jumelés. Jumeler le casque dans Réglages Système → Bluetooth, puis revenir ici.", "No XM headset found among paired devices. Pair it in System Settings → Bluetooth, then come back."))
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 } else {
-                    Picker("Casque suivi", selection: headsetSelection) {
-                        Text("Automatique").tag(nil as String?)
+                    Picker(L("Casque suivi", "Tracked headset"), selection: headsetSelection) {
+                        Text(L("Automatique", "Automatic")).tag(nil as String?)
                         ForEach(controller.xmCandidates) { device in
                             Text("\(device.name) (\(device.id))").tag(device.id as String?)
                         }
@@ -87,45 +87,48 @@ struct AppPreferencesView: View {
                         }
                     }
                     if controller.personalHeadset == nil {
-                        Text("Plusieurs casques XM correspondent : choisissez-en un ci-dessus pour ne plus avoir à le faire.")
+                        Text(L("Plusieurs casques XM correspondent : choisissez-en un ci-dessus pour ne plus avoir à le faire.", "Several XM headsets match: pick one above so you won't be asked again."))
                             .font(.callout)
                             .foregroundStyle(.secondary)
                     }
                 }
-                Button("Oublier le casque mémorisé") { controller.forgetRememberedHeadset() }
+                Button(L("Oublier le casque mémorisé", "Forget remembered headset")) { controller.forgetRememberedHeadset() }
                     .disabled(controller.personalHeadset == nil && controller.customDisplayName == nil)
             } header: {
-                Text("Sélection")
+                Text(L("Sélection", "Selection"))
             }
             Section {
-                Toggle("Barre des menus uniquement", isOn: $settings.menuBarOnly)
-                Text("Masque l’icône du Dock et l’entrée dans le sélecteur d’apps. XM Control reste accessible depuis son icône dans la barre des menus ; la fenêtre s’ouvre depuis le panneau du casque.")
+                Picker(L("Langue", "Language"), selection: $settings.language) {
+                    ForEach(AppLanguage.allCases) { Text($0.label).tag($0) }
+                }
+                Toggle(L("Barre des menus uniquement", "Menu bar only"), isOn: $settings.menuBarOnly)
+                Text(L("Masque l’icône du Dock et l’entrée dans le sélecteur d’apps. XM Control reste accessible depuis son icône dans la barre des menus ; la fenêtre s’ouvre depuis le panneau du casque.", "Hides the Dock icon and the app-switcher entry. XM Control stays reachable from its menu-bar icon; the window opens from the headset panel."))
                     .font(.callout)
                     .foregroundStyle(.secondary)
             } header: {
-                Text("Application")
+                Text(L("Application", "Application"))
             }
             Section {
-                Toggle("Journal de diagnostic Bluetooth", isOn: $controller.protocolLoggingEnabled)
-                Text("Enregistre les échanges avec le casque pour examiner un problème. Le journal peut contenir le nom et l’adresse des appareils ; vérifiez-le avant de le partager.")
+                Toggle(L("Journal de diagnostic Bluetooth", "Bluetooth diagnostic log"), isOn: $controller.protocolLoggingEnabled)
+                Text(L("Enregistre les échanges avec le casque pour examiner un problème. Le journal peut contenir le nom et l’adresse des appareils ; vérifiez-le avant de le partager.", "Records exchanges with the headset for troubleshooting. The log may contain device names and addresses; review it before sharing."))
                     .font(.callout)
                     .foregroundStyle(.secondary)
-                Button("Afficher le dossier du journal…") {
+                Button(L("Afficher le dossier du journal…", "Show log folder…")) {
                     guard let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else { return }
                     let directory = base.appendingPathComponent("XM Control", isDirectory: true)
                     try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
                     NSWorkspace.shared.open(directory)
                 }
             } header: {
-                Text("Diagnostic")
+                Text(L("Diagnostic", "Diagnostics"))
             }
             Section {
-                LabeledContent("Version", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Développement")
-                Text("Projet indépendant, dérivé de XM6 Control par Rui Martins. Licence MIT. Aucun compte requis, aucune donnée envoyée. Les visuels Sony ne sont pas inclus.")
+                LabeledContent(L("Version", "Version"), value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? L("Développement", "Development"))
+                Text(L("Projet indépendant, dérivé de XM6 Control par Rui Martins. Licence MIT. Aucun compte requis, aucune donnée envoyée. Photos produit Sony : voir les crédits.", "Independent project, derived from XM6 Control by Rui Martins. MIT license. No account, nothing sent anywhere. Sony product photos: see credits."))
                     .font(.callout)
                     .foregroundStyle(.secondary)
             } header: {
-                Text("À propos")
+                Text(L("À propos", "About"))
             }
         }
         .formStyle(.grouped)

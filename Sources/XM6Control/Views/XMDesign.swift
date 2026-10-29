@@ -32,18 +32,19 @@ struct XMIdentity: View {
 }
 
 extension ListeningMode {
-    var detail: String {
+    var detail: String { displayDetail }
+    var displayDetail: String {
         switch self {
-        case .standard: return "Votre son, tout simplement."
-        case .backgroundMusic: return "La musique vous entoure."
-        case .cinema: return "Entrez dans le film."
+        case .standard: return L("Votre son, tout simplement.", "Just your sound.")
+        case .backgroundMusic: return L("La musique vous entoure.", "Music all around you.")
+        case .cinema: return L("Entrez dans le film.", "Step into the film.")
         }
     }
     var shortDetail: String {
         switch self {
-        case .standard: return "Son original"
-        case .backgroundMusic: return "Ambiance douce"
-        case .cinema: return "Son immersif"
+        case .standard: return L("Son original", "Original sound")
+        case .backgroundMusic: return L("Ambiance douce", "Soft ambience")
+        case .cinema: return L("Son immersif", "Immersive sound")
         }
     }
 }

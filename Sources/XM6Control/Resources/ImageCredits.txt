@@ -1,16 +1,22 @@
-XM Control — images et crédits.
+XM Control — images and credits.
 
-Aucune photo produit Sony n'est incluse dans ce dépôt open source.
-L'interface utilise une illustration vectorielle intégrée (HeadphoneIllustration).
+Headset photos bundled with the app (Sources/XM6Control/Resources/):
+- xm6.png — Sony WH-1000XM6 silver product photo, via Spark NZ
+  https://www.spark.co.nz/content/dam/spark/images/product-images/accessories/headphones/sony/sony-wh-1000xm6-silver-1.png
+- xm5.png — Sony WH-1000XM5 silver product photo, via Spark NZ
+  https://www.spark.co.nz/content/dam/spark/images/product-images/accessories/headphones/sony/sony-wh-1000xm5-silver-1.png
+- No XM4 photo is bundled: no high-resolution silver shot could be retrieved.
+  XM4 owners see the built-in vector illustration, or can drop their own
+  `WH-1000XM4.png` / `xm4.png` into `~/Library/Application Support/XM Control/`.
 
-Pour utiliser votre propre photo locale (non redistribuée) :
-1. Placez un fichier `headphones.png` dans
-   `~/Library/Application Support/XM Control/`
-   (l'ancien dossier `XM6 Control/` est aussi recherché pour migration).
-2. Relancez l'application.
+These are Sony product photos, shown for identification of the hardware this
+app controls. They are NOT covered by the MIT license of the code. If you are
+the rights holder and want them removed, open an issue and they will go.
 
-N'incluez jamais de visuel Sony dans un fork public sans droit de redistribution.
-L'icône de l'application est générée localement par `Scripts/make_icon.swift`
-(symbole système, aucune ressource tiers).
+To use your own local photo (never redistributed): place
+`WH-1000XM4.png`, `WH-1000XM5.png` or `WH-1000XM6.png` (or `headphones.png`)
+in `~/Library/Application Support/XM Control/` and relaunch.
 
-Code : licence MIT, voir LICENSE (attribution d'origine conservée).
+The app icon is generated locally by `Scripts/make_icon.swift` (system symbol,
+no third-party artwork). Code: MIT license, see LICENSE (original attribution
+to Rui Martins kept).

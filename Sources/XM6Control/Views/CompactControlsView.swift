@@ -83,16 +83,16 @@ struct CompactControlsView: View {
                     .fixedSize()
             }
             Menu {
-                Button("Ouvrir XM Control") { MainWindowController.shared.show() }
+                Button(L("Ouvrir XM Control", "Open XM Control")) { MainWindowController.shared.show() }
                 if !isDesktopWidget {
-                    Button("Ouvrir le mini-panneau") { MiniPanelController.shared.show() }
+                    Button(L("Ouvrir le mini-panneau", "Open the mini panel")) { MiniPanelController.shared.show() }
                 }
-                Button("Réglages de l’application…") { PreferencesWindowController.shared.show() }
+                Button(L("Réglages de l’application…", "App settings…")) { PreferencesWindowController.shared.show() }
                 Divider()
                 if connected {
-                    Button("Déconnecter le casque") { controller.disconnect() }
+                    Button(L("Déconnecter le casque", "Disconnect headset")) { controller.disconnect() }
                 }
-                Button("Quitter XM Control") { NSApp.terminate(nil) }
+                Button(L("Quitter XM Control", "Quit XM Control")) { NSApp.terminate(nil) }
             } label: {
                 Image(systemName: "ellipsis")
                     .font(.system(size: 13, weight: .semibold))
@@ -103,20 +103,20 @@ struct CompactControlsView: View {
             .menuStyle(.borderlessButton)
             .menuIndicator(.hidden)
             .fixedSize()
-            .help("Options")
-            .accessibilityLabel("Options d’XM Control")
+            .help(L("Options", "Options"))
+            .accessibilityLabel(L("Options d’XM Control", "XM Control options"))
         }
     }
 
     private var modeSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionLabel("Mode d’écoute")
+            sectionLabel(L("Mode d’écoute", "Listening mode"))
             TileSegment(items: ListeningMode.allCases.map {
-                .init(value: $0, title: $0.tileLabel, symbol: $0.symbol)
+                .init(value: $0, title: $0.displayTile, symbol: $0.symbol)
             }, selection: mode) { controller.setListeningMode($0) }
             if let message = controller.listeningModeFailure { OperationFailureLine(message: message) }
             if mode == .backgroundMusic && !isDesktopWidget {
-                CompactSegment(items: BGMRoomSize.allCases.map { ($0, $0.frenchLabel) },
+                CompactSegment(items: BGMRoomSize.allCases.map { ($0, $0.displayLabel) },
                                selection: controller.requestedBGMRoomSize ?? controller.bgmRoomSize) {
                     controller.setBGMRoomSize($0)
                 }
@@ -126,11 +126,11 @@ struct CompactControlsView: View {
 
     private var noiseSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionLabel("Contrôle du bruit")
+            sectionLabel(L("Contrôle du bruit", "Noise control"))
             CompactSegment(items: [
-                (AmbientSoundMode.noiseCancelling, "Réduction"),
-                (AmbientSoundMode.ambientSound, "Ambiant"),
-                (AmbientSoundMode.off, "Désactivé"),
+                (AmbientSoundMode.noiseCancelling, L("Réduction", "Noise cancelling")),
+                (AmbientSoundMode.ambientSound, L("Ambiant", "Ambient")),
+                (AmbientSoundMode.off, L("Désactivé", "Off")),
             ], selection: ambient?.mode) { choice in
                 var updated = ambient ?? AmbientSoundState()
                 updated.mode = choice
@@ -144,7 +144,7 @@ struct CompactControlsView: View {
                     updated.level = level
                     controller.setAmbientSound(updated)
                 }
-                .accessibilityLabel("Niveau du son ambiant")
+                .accessibilityLabel(L("Niveau du son ambiant", "Ambient sound level"))
                 .padding(.top, 4)
             }
         }
@@ -154,21 +154,21 @@ struct CompactControlsView: View {
         let state = controller.requestedEqualizer ?? controller.equalizer
         return VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("Égaliseur")
+                Text(L("Égaliseur", "Equalizer"))
                     .font(MockType.body)
                     .foregroundStyle(Mock.ink)
                 Spacer()
                 MockValueMenu(selection: state?.preset, options: EqualizerPreset.allCases,
-                              label: { $0.frenchLabel }) { controller.setEqualizerPreset($0) }
+                              label: { $0.displayLabel }) { controller.setEqualizerPreset($0) }
             }
             HStack(spacing: 8) {
                 ForEach(CustomEqualizerCurve.allCases) { curve in
-                    Button("EQ \(curve.rawValue)") { controller.setEqualizerBands(curve.bands) }
+                    Button(L("EQ \(curve.rawValue)", "EQ \(curve.rawValue)")) { controller.setEqualizerBands(curve.bands) }
                         .buttonStyle(.plain)
                         .font(MockType.captionStrong)
                         .foregroundStyle(Mock.accent)
-                        .help("\(curve.rawValue) : \(curve.detail)")
-                        .accessibilityLabel("Appliquer l’égaliseur \(curve.rawValue)")
+                        .help(L("\(curve.rawValue) : \(curve.detail)", "\(curve.rawValue): \(curve.detail)"))
+                        .accessibilityLabel(L("Appliquer l’égaliseur \(curve.rawValue)", "Apply the \(curve.rawValue) equalizer"))
                 }
                 Spacer(minLength: 0)
             }
@@ -177,7 +177,7 @@ struct CompactControlsView: View {
 
     private func sourceSection(_ devices: [MultipointDevice]) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            sectionLabel("Source audio")
+            sectionLabel(L("Source audio", "Audio source"))
             ForEach(Array(devices.prefix(4).enumerated()), id: \.element.id) { index, device in
                 if index > 0 { Rectangle().fill(Mock.hair).frame(height: 0.5) }
                 deviceRow(device)
@@ -185,7 +185,7 @@ struct CompactControlsView: View {
             if controller.isSourceSwitching {
                 HStack(spacing: 6) {
                     ProgressView().controlSize(.small)
-                    Text("Basculement…")
+                    Text(L("Basculement…", "Switching…"))
                         .font(MockType.caption)
                         .foregroundStyle(Mock.ink2)
                 }
@@ -220,21 +220,21 @@ struct CompactControlsView: View {
             } else if isTarget {
                 ProgressView().controlSize(.small)
             } else if canSwitch {
-                Button("Utiliser") { controller.switchPlayback(to: device) }
+                Button(L("Utiliser", "Use")) { controller.switchPlayback(to: device) }
                     .buttonStyle(.plain)
                     .font(MockType.captionStrong)
                     .foregroundStyle(Mock.accent)
                     .opacity(switching ? 0.4 : 1)
                     .disabled(switching)
             } else {
-                Text(switching ? "Patientez…" : "Déconnecté")
+                Text(switching ? L("Patientez…", "Hold on…") : L("Déconnecté", "Disconnected"))
                     .font(MockType.caption)
                     .foregroundStyle(Mock.ink3)
             }
         }
         .padding(.vertical, 7)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(device.name), \(device.isPlayback ? "lecture en cours" : (device.isConnected ? "connecté" : "déconnecté"))")
+        .accessibilityLabel("\(device.name), \(device.isPlayback ? L("lecture en cours", "now playing") : (device.isConnected ? L("connecté", "connected") : L("déconnecté", "disconnected")))")
     }
 
     @ViewBuilder
@@ -242,10 +242,10 @@ struct CompactControlsView: View {
         if controller.connectionState == .connecting || controller.connectionState == .initializing {
             VStack(spacing: 12) {
                 ProgressView().controlSize(.small)
-                Text("Connexion à votre casque…")
+                Text(L("Connexion à votre casque…", "Connecting to your headset…"))
                     .font(MockType.body)
                     .foregroundStyle(Mock.ink2)
-                Button("Annuler la connexion") { controller.disconnect() }
+                Button(L("Annuler la connexion", "Cancel connection")) { controller.disconnect() }
                     .buttonStyle(.plain)
                     .font(MockType.bodyStrong)
                     .foregroundStyle(Mock.accent)
@@ -256,13 +256,13 @@ struct CompactControlsView: View {
             VStack(spacing: 12) {
                 HeadphoneImage()
                     .frame(width: 92, height: 92)
-                Text("Casque déconnecté")
+                Text(L("Casque déconnecté", "Headset disconnected"))
                     .font(MockType.heading)
                     .foregroundStyle(Mock.ink)
                 Button {
                     controller.autoConnect()
                 } label: {
-                    Text(controller.personalHeadset == nil ? "Rechercher mon casque" : "Se connecter")
+                    Text(controller.personalHeadset == nil ? L("Rechercher mon casque", "Find my headset") : L("Se connecter", "Connect"))
                         .font(MockType.bodyStrong)
                         .foregroundStyle(Mock.primaryText)
                         .frame(maxWidth: .infinity)
@@ -286,14 +286,14 @@ struct CompactControlsView: View {
         VStack(spacing: 0) {
             Rectangle().fill(Mock.hair).frame(height: 0.5)
             HStack {
-                Text(isDesktopWidget ? "Mini-panneau" : "Votre son. Votre espace.")
+                Text(isDesktopWidget ? L("Mini-panneau", "Mini panel") : L("Votre son. Votre espace.", "Your sound. Your space."))
                     .font(MockType.caption)
                     .foregroundStyle(Mock.ink3)
                 Spacer()
                 Button {
                     MainWindowController.shared.show()
                 } label: {
-                    Label("Ouvrir l’app", systemImage: "arrow.up.right")
+                    Label(L("Ouvrir l’app", "Open the app"), systemImage: "arrow.up.right")
                         .font(MockType.bodyStrong)
                         .foregroundStyle(Mock.accent)
                 }

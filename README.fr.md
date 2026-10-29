@@ -83,6 +83,6 @@ Le journal est optionnel et désactivé par défaut : `~/Library/Application Sup
 
 Code : [licence MIT et attribution originale à Rui Martins](LICENSE). Références protocole : [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge), [SonyHeadphonesClient](https://github.com/Plutoberth/SonyHeadphonesClient) et [son fork mos9527](https://github.com/mos9527/SonyHeadphonesClient). Sans garantie sur chaque commande.
 
-**Aucune image Sony incluse.** L’interface utilise une illustration vectorielle. Voir [ImageCredits.txt](Sources/XM6Control/Resources/ImageCredits.txt) pour ajouter votre propre `headphones.png` locale (non redistribuée). Ne publiez jamais de visuel Sony sans droit.
+**Photos du casque :** visuels produit Sony argentés pour XM5/XM6 inclus pour identification (voir [ImageCredits.txt](Sources/XM6Control/Resources/ImageCredits.txt)) ; XM4 utilise l’illustration vectorielle intégrée. Déposez votre `WH-1000XM4.png` / `WH-1000XM5.png` / `WH-1000XM6.png` dans `~/Library/Application Support/XM Control/` pour remplacer. Visuels Sony appartenant à Sony — inclus uniquement pour identifier le matériel, retirés sur demande.
 
 XM Control est indépendant de Sony et d’Apple, sans affiliation ni approbation. Marques et visuels appartiennent à leurs titulaires.

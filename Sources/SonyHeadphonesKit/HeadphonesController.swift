@@ -221,7 +221,7 @@ public final class HeadphonesController: ObservableObject {
                 self.connect(toAddress: address, name: self.preferences.name)
                 return
             }
-            self.finishSession(error: "Votre casque n’est pas jumelé au Mac. Vérifiez Réglages Système › Bluetooth, puis réessayez.")
+            self.finishSession(error: self.noHeadsetError())
         }
     }
 
@@ -259,7 +259,7 @@ public final class HeadphonesController: ObservableObject {
 
     private func connectExpired() {
         guard connectionState == .connecting || connectionState == .initializing else { return }
-        linkLost("Le casque ne répond pas.")
+        linkLost(L("Le casque ne répond pas.", "The headset is not responding."))
     }
 
     /// The link dropped or went silent. While the user still wants the headset, wait
@@ -269,7 +269,7 @@ public final class HeadphonesController: ObservableObject {
         guard wantsConnection else { finishSession(error: reason); return }
         guard reconnectTask == nil else { return }
         guard reconnectAttempts < timing.reconnectDelays.count else {
-            finishSession(error: reason + " Vérifiez qu’il est allumé et à portée, puis réessayez.")
+            finishSession(error: reason + L(" Vérifiez qu’il est allumé et à portée, puis réessayez.", " Check that it is on and nearby, then try again."))
             return
         }
         let delay = timing.reconnectDelays[reconnectAttempts]
@@ -325,6 +325,25 @@ public final class HeadphonesController: ObservableObject {
     }
 
     public func noteAppBecameActive() { refreshAndReconnectIfLinked() }
+
+    /// Error shown when no headset can be joined. Distinguishes "nothing
+    /// paired" from "several XM candidates — pick one in Settings".
+    private func noHeadsetError() -> String {
+        if xmCandidates.count > 1 {
+            return L(
+                "Plusieurs casques XM sont jumelés. Choisissez le vôtre dans Réglages, puis Se connecter.",
+                "Several XM headsets are paired. Pick yours in Settings, then Connect."
+            )
+        }
+        return L(
+            "Votre casque n’est pas jumelé au Mac. Vérifiez Réglages Système › Bluetooth, puis réessayez.",
+            "Your headset is not paired with the Mac. Check System Settings › Bluetooth, then try again."
+        )
+    }
+
+    /// Call after the interface language changes so every observing view
+    /// re-renders with the other language.
+    public func noteLanguageChanged() { objectWillChange.send() }
 
     private func candidateAddress() -> (address: String, name: String?)? {
         if let headset = personalHeadset { return (headset.id, headset.name) }
@@ -390,7 +409,7 @@ public final class HeadphonesController: ObservableObject {
                 do { try await Task.sleep(nanoseconds: interval) } catch { return }
                 guard let self, self.session == current, self.connectionState == .connected else { return }
                 if DispatchTime.now().uptimeNanoseconds - self.lastInboundAt > self.timing.silence {
-                    self.linkLost("Le casque ne répond plus.")
+                    self.linkLost(L("Le casque ne répond plus.", "The headset stopped responding."))
                     return
                 }
                 // A read the headset must answer: its reply, like any frame, proves the link.
@@ -480,7 +499,7 @@ public final class HeadphonesController: ObservableObject {
 
     private func ready() -> Bool {
         guard connectionState == .connected else {
-            commandOperation = .failed("Connectez votre casque avant de modifier ses réglages.")
+            commandOperation = .failed(L("Connectez votre casque avant de modifier ses réglages.", "Connect your headset before changing its settings."))
             return false
         }
         return true
@@ -639,18 +658,18 @@ public final class HeadphonesController: ObservableObject {
 
     public func switchPlayback(to device: MultipointDevice) {
         guard connectionState == .connected else {
-            sourceOperation = .failed("Connectez votre casque avant de changer de source.")
+            sourceOperation = .failed(L("Connectez votre casque avant de changer de source.", "Connect your headset before switching source."))
             return
         }
         // Anti double-clic : une bascule est déjà en vol.
         guard changes[Self.sourceGroup] == nil else { return }
         guard !device.isPlayback else { return }
         guard device.isConnected else {
-            sourceOperation = .failed("Cet appareil n’est plus connecté au casque. Reconnectez-le en Bluetooth puis actualisez la liste.")
+            sourceOperation = .failed(L("Cet appareil n’est plus connecté au casque. Reconnectez-le en Bluetooth puis actualisez la liste.", "That device is no longer connected to the headset. Reconnect it over Bluetooth, then refresh the list."))
             return
         }
         guard let payload = SonyCommands.buildSourceSwitchSet(macAddress: device.macAddress) else {
-            sourceOperation = .failed("Adresse Bluetooth invalide pour cet appareil.")
+            sourceOperation = .failed(L("Adresse Bluetooth invalide pour cet appareil.", "Invalid Bluetooth address for this device."))
             return
         }
         requestedSourceDeviceId = device.id
@@ -665,7 +684,7 @@ public final class HeadphonesController: ObservableObject {
             connectionState = .initializing
             sendInitAttempt()
         case .closed:
-            linkLost("La connexion au casque a été interrompue.")
+            linkLost(L("La connexion au casque a été interrompue.", "The connection to the headset was interrupted."))
         case .failed(let error): linkLost(error)
         case .dataReceived(let bytes):
             guard connectionState == .initializing || connectionState == .connected else { return }
@@ -694,7 +713,7 @@ public final class HeadphonesController: ObservableObject {
                 self.initRetryCount += 1
                 self.sendInitAttempt()
             } else {
-                self.linkLost("Le casque n’a pas confirmé la connexion Sony.")
+                self.linkLost(L("Le casque n’a pas confirmé la connexion Sony.", "The headset did not confirm the Sony connection."))
             }
         }
     }
@@ -721,7 +740,7 @@ public final class HeadphonesController: ObservableObject {
         case .protocolInfo(let version):
             guard connectionState == .initializing else { return }
             guard version != .unknown else {
-                finishSession(error: "La réponse Sony reçue n’est pas reconnue. Le casque n’a pas été mémorisé.")
+                finishSession(error: L("La réponse Sony reçue n’est pas reconnue. Le casque n’a pas été mémorisé.", "The Sony reply was not recognized. The headset was not remembered."))
                 return
             }
             pendingProtocolVersion = version
@@ -836,7 +855,7 @@ public final class HeadphonesController: ObservableObject {
         guard let active = list.first(where: { $0.isPlayback }) else { return }
         guard active.id != expected else { return }
         lastConfirmedSourceId = nil
-        sourceOperation = .failed("« \(active.name) » a repris la lecture. Mettez-le en pause, puis touchez Utiliser à nouveau.")
+        sourceOperation = .failed(L("« \(active.name) » a repris la lecture. Mettez-le en pause, puis touchez Utiliser à nouveau.", "“\(active.name)” resumed playback. Pause it, then tap Use again."))
     }
 
     /// Relit la liste multipoint tant que connecté, sans toucher à l'état
@@ -856,7 +875,10 @@ public final class HeadphonesController: ObservableObject {
               let version = pendingProtocolVersion else { return }
         protocolVersion = version
         initRetryTask?.cancel(); connectTimeoutTask?.cancel()
-        if let target = connectTarget { preferences.remember(address: target.address, name: target.name) }
+        if let target = connectTarget {
+            preferences.remember(address: target.address, name: target.name)
+            preferences.rememberModel(HeadsetModel.detect(fromName: target.name ?? ""))
+        }
         connectionState = .connected
         reconnectAttempts = 0
         lastInboundAt = DispatchTime.now().uptimeNanoseconds
@@ -938,12 +960,12 @@ public final class HeadphonesController: ObservableObject {
             return
         }
         clearRequested(group: group)
-        let message = "Le casque n’a pas confirmé ce réglage. Actualisez son état ou réessayez."
+        let message = L("Le casque n’a pas confirmé ce réglage. Actualisez son état ou réessayez.", "The headset did not confirm this setting. Refresh its status or try again.")
         if group == Self.modeGroup {
             listeningModeOperation = .failed(message)
             updateListeningMode()
         } else if group == Self.sourceGroup {
-            sourceOperation = .failed("Le casque n’a pas confirmé la bascule. Si l’iPhone joue encore (musique, vidéo, appel), mettez-le en pause puis réessayez.")
+            sourceOperation = .failed(L("Le casque n’a pas confirmé la bascule. Si l’autre appareil joue encore (musique, vidéo, appel), mettez-le en pause puis réessayez.", "The headset did not confirm the switch. If the other device is still playing (music, video, call), pause it and try again."))
         } else {
             commandOperation = .failed(message)
         }
@@ -1008,7 +1030,7 @@ public final class HeadphonesController: ObservableObject {
             // An ambiguous late ACK must never acknowledge a different command.
             // Drop this link rather than guessing Sony's retransmission policy, and
             // connect again on a clean session.
-            self.linkLost("Le casque n’a pas accusé réception d’une commande.")
+            self.linkLost(L("Le casque n’a pas accusé réception d’une commande.", "The headset did not acknowledge a command."))
         }
     }
 }

@@ -26,7 +26,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         AppServices.shared.settings.apply()
         statusItem = StatusItemController()
         // Closes a preferences window SwiftUI may open on its own at launch.
-        NSApp.windows.filter { $0.title.hasPrefix("Réglages") }.forEach { $0.orderOut(nil) }
+        NSApp.windows.filter { $0.title.hasPrefix(L("Réglages", "Settings")) }.forEach { $0.orderOut(nil) }
         if !AppSettings.storedMenuBarOnly {
             MainWindowController.shared.show()
         }
@@ -96,9 +96,9 @@ final class StatusItemController: NSObject {
     }
 
     private var spokenState: String {
-        guard case .connected(let level, let charging) = badgeState else { return "XM Control, casque non connecté" }
-        guard let level else { return "XM Control, connecté" }
-        return "XM Control, batterie à \(level) pour cent\(charging ? ", en charge" : "")"
+        guard case .connected(let level, let charging) = badgeState else { return L("XM Control, casque non connecté", "XM Control, headset not connected") }
+        guard let level else { return L("XM Control, connecté", "XM Control, connected") }
+        return L("XM Control, batterie à \(level) pour cent\(charging ? ", en charge" : "")", "XM Control, battery at \(level) percent\(charging ? ", charging" : "")")
     }
 
     @objc private func togglePopover(_ sender: NSStatusBarButton) {
@@ -196,7 +196,7 @@ final class PreferencesWindowController {
                 .environmentObject(AppServices.shared.controller)
                 .environmentObject(AppServices.shared.settings)
             let created = NSWindow(contentViewController: NSHostingController(rootView: root))
-            created.title = "Réglages XM Control"
+            created.title = L("Réglages XM Control", "XM Control Settings")
             created.styleMask.insert([.titled, .closable])
             created.isReleasedWhenClosed = false
             created.center()

@@ -39,6 +39,15 @@ swift Scripts/make_icon.swift
 iconutil -c icns ".build/AppIcon.iconset" -o "$STAGED_APP/Contents/Resources/XMIcon.icns"
 cp "$BUILD_DIR/XM6Control" "$STAGED_APP/Contents/MacOS/XM6Control"
 cp Sources/XM6Control/Resources/Info.plist "$STAGED_APP/Contents/Info.plist"
+for lang in fr en; do
+  mkdir -p "$STAGED_APP/Contents/Resources/$lang.lproj"
+  cp "Sources/XM6Control/Resources/$lang.lproj/InfoPlist.strings" "$STAGED_APP/Contents/Resources/$lang.lproj/InfoPlist.strings"
+done
+for photo in xm4 xm5 xm6; do
+  if [ -f "Sources/XM6Control/Resources/$photo.png" ]; then
+    cp "Sources/XM6Control/Resources/$photo.png" "$STAGED_APP/Contents/Resources/"
+  fi
+done
 cp LICENSE Sources/XM6Control/Resources/ImageCredits.txt "$STAGED_APP/Contents/Resources/"
 if [ -f Sources/XM6Control/Resources/headphones.png ]; then
     cp Sources/XM6Control/Resources/headphones.png "$STAGED_APP/Contents/Resources/"

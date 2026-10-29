@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import ImageIO
+import SonyHeadphonesKit
 
 /// One shared, decoded photo for the window, menu and compact panel.
 /// Custom images can be refreshed explicitly through `HeadphoneImageCache.reload()`;
@@ -29,11 +30,22 @@ final class HeadphoneImageCache: ObservableObject {
     /// Call on the main thread after importing a replacement photo.
     func reload() {
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
-        let locations: [URL?] = [
-            support?.appendingPathComponent("XM Control/headphones.png"),
+        let model = UserDefaults.standard.string(forKey: "lastHeadsetModel").flatMap(HeadsetModel.init(rawValue:))
+        // Per-generation photos, newest first: a user-provided file in
+        // Application Support wins, then the bundled photo, then the generic
+        // vector illustration. XM4 ships without a bundled photo.
+        var names: [String] = []
+        if let model {
+            names += ["WH-1000\(model.rawValue)", model.rawValue.lowercased()]
+        }
+        names += ["WH-1000XM6", "xm6", "WH-1000XM5", "xm5", "WH-1000XM4", "xm4", "headphones"]
+        var locations: [URL?] = support.map { base in
+            names.map { base.appendingPathComponent("XM Control/\($0).png") }
+        }.flatMap { $0 } ?? []
+        locations += [
             support?.appendingPathComponent("XM6 Control/headphones.png"),
-            Bundle.main.url(forResource: "headphones", withExtension: "png")
         ]
+        locations += names.compactMap { Bundle.main.url(forResource: $0, withExtension: "png") }
         image = locations.compactMap { $0 }.lazy.compactMap { url -> NSImage? in
             // Decode once, rather than letting NSImage repeatedly defer file reads. No
             // view shows the photo above 170 pt today, so a 1024 px bitmap is kept

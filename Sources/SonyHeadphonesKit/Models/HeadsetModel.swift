@@ -46,6 +46,13 @@ public enum HeadsetModelPreference: String, CaseIterable, Identifiable {
         }
     }
 
+    public var displayLabel: String {
+        switch self {
+        case .auto: return L("Automatique", "Automatic")
+        case .xm4, .xm5, .xm6: return rawValue
+        }
+    }
+
     public static func fromStored(_ raw: String?) -> HeadsetModelPreference {
         guard let raw else { return .auto }
         return HeadsetModelPreference(rawValue: raw) ?? .auto

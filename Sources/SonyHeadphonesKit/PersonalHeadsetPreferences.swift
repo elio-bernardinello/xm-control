@@ -63,4 +63,17 @@ struct PersonalHeadsetPreferences {
         defaults.removeObject(forKey: "personalHeadsetAddress")
         defaults.removeObject(forKey: "personalHeadsetName")
     }
+
+    /// Generation shown last ("XM4"/"XM5"/"XM6"), written on each successful
+    /// session so the illustration can show the matching photo.
+    var lastHeadsetModel: HeadsetModel? {
+        guard let raw = defaults.string(forKey: "lastHeadsetModel") else { return nil }
+        return HeadsetModel(rawValue: raw)
+    }
+
+    func rememberModel(_ model: HeadsetModel?) {
+        if let model {
+            defaults.set(model.rawValue, forKey: "lastHeadsetModel")
+        }
+    }
 }
