@@ -433,6 +433,28 @@ struct DashboardView: View {
         return MockCard(title: "Égaliseur", icon: "slider.vertical.3") {
             MockValueMenu(selection: state?.preset, options: EqualizerPreset.allCases,
                           label: { $0.frenchLabel }) { controller.setEqualizerPreset($0) }
+            HStack(spacing: 8) {
+                ForEach(CustomEqualizerCurve.allCases) { curve in
+                    Button {
+                        controller.setEqualizerBands(curve.bands)
+                    } label: {
+                        VStack(spacing: 2) {
+                            Text(curve.rawValue)
+                                .font(MockType.bodyStrong)
+                            Text(curve.detail)
+                                .font(MockType.caption)
+                                .foregroundStyle(Mock.ink3)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Mock.well))
+                    }
+                    .buttonStyle(.plain)
+                    .help("Appliquer la courbe \(curve.rawValue) : \(curve.detail)")
+                    .accessibilityLabel("Appliquer l’égaliseur \(curve.rawValue)")
+                }
+            }
+            .padding(.top, 8)
             ZStack(alignment: .top) {
                 if complete {
                     HStack(alignment: .center, spacing: 10) {

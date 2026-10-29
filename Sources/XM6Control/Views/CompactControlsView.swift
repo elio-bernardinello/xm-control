@@ -152,13 +152,26 @@ struct CompactControlsView: View {
 
     private var equalizerRow: some View {
         let state = controller.requestedEqualizer ?? controller.equalizer
-        return HStack {
-            Text("Égaliseur")
-                .font(MockType.body)
-                .foregroundStyle(Mock.ink)
-            Spacer()
-            MockValueMenu(selection: state?.preset, options: EqualizerPreset.allCases,
-                          label: { $0.frenchLabel }) { controller.setEqualizerPreset($0) }
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Égaliseur")
+                    .font(MockType.body)
+                    .foregroundStyle(Mock.ink)
+                Spacer()
+                MockValueMenu(selection: state?.preset, options: EqualizerPreset.allCases,
+                              label: { $0.frenchLabel }) { controller.setEqualizerPreset($0) }
+            }
+            HStack(spacing: 8) {
+                ForEach(CustomEqualizerCurve.allCases) { curve in
+                    Button("EQ \(curve.rawValue)") { controller.setEqualizerBands(curve.bands) }
+                        .buttonStyle(.plain)
+                        .font(MockType.captionStrong)
+                        .foregroundStyle(Mock.accent)
+                        .help("\(curve.rawValue) : \(curve.detail)")
+                        .accessibilityLabel("Appliquer l’égaliseur \(curve.rawValue)")
+                }
+                Spacer(minLength: 0)
+            }
         }
     }
 

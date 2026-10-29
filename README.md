@@ -27,6 +27,19 @@ La détection automatique reconnaît :
 
 La connexion de commande Bluetooth est distincte de la sortie audio macOS : une musique audible ne garantit pas que le casque accepte déjà une session de contrôle. Une sélection envoyée doit être confirmée par les réponses du casque ; en cas d’échec, vérifier la connexion avant de réessayer.
 
+## Guide de fonctionnement en 2 minutes
+
+1. **Connexion sans clic.** Allumez le casque déjà jumelé : s’il est connecté en audio macOS, l’app le rejoint seule en quelques secondes (pareil au retour premier plan). Sinon, **Se connecter** demande d’abord à macOS d’établir le Bluetooth, puis ouvre la session Sony.
+2. **Mode Cinéma pour un film sur Mac.** Barre des menus → **Cinéma** (ou `⌘⌥3`). L’affichage distingue `demandé` / `confirmé par le casque` / `non confirmé` : seul le confirmé compte pour le son. Si ça ne confirme pas, revérifiez la liaison avant de réessayer.
+3. **Le téléphone a volé la connexion ?** Carte **Source audio** : la lecture en cours est marquée `Actif`. Mettez l’autre appareil en pause, touchez **Utiliser** sur le Mac. Si l’iPhone rejoue aussitôt, remettez-le en pause puis recommencez — l’app vous le dit.
+4. **Égaliseurs à portée de main.** Presets Sony + curseurs 10 bandes + 2 raccourcis :
+   - **Film** : basses présentes, dialogues maintenus — pour films/séries.
+   - **Voix** : ronron coupé, 500 Hz–2 kHz poussés — pour dialogues, podcasts, appels.
+   Un clic applique la courbe (le casque bascule en `Personnalisé`). Les curseurs restent éditables après.
+5. **Perso.** Réglages : nom affiché (`Casque de Marie`), modèle, casque suivi. Rien n’est envoyé nulle part.
+
+FAQ : `Chargement…` puis `non communiqué` = le casque ne l’a pas rapporté (normal sur XM4/XM5 pour certaines fonctions). `Le casque ne répond pas` = lien perdu : rallumez, reconnectez en audio macOS, puis **Se connecter**. Journal désactivé par défaut.
+
 ## Construire
 
 macOS 13 minimum et outils Apple compatibles avec **Swift 6** (`swift --version`).
