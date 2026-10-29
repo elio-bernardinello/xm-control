@@ -1,101 +1,77 @@
 # XM Control
 
-A native macOS app for **Sony WH-1000XM4 / XM5 / XM6**, with **Standard / Background Music / Cinema** right from the menu bar.
+I made this for myself because I wanted my Sony headset to just work from my Mac's menu bar — and I figured it might help a few of you too.
+
+It works with **Sony WH-1000XM4 / XM5 / XM6**, with **Standard / Background Music / Cinema** one click away.
+
+### ⬇️ Download
+
+**[Download XM-Control-1.0.dmg](https://github.com/elio-bernardinello/xm-control/releases/download/v1.0/XM-Control-1.0.dmg)** (1.2 MB, macOS 13+)
+
+No account, no server, everything stays on your Mac.
 
 ![Main window — Cinema confirmed, source list, Film/Voice EQ](screenshots/real-main-light.png)
 ![Menu bar popover — Cinema + EQ shortcuts](screenshots/real-menu-light.png)
 ![Settings — display name, model, tracked headset](screenshots/real-prefs.png)
-*Real app UI rendered with sample data. Dark mode supported ([main-dark](screenshots/real-main-dark.png)). No Sony photos included.*
+*Real app screens with sample data. Dark mode included ([preview](screenshots/real-main-dark.png)). No Sony photos in the app.*
 
-Forked from [XM6 Control by Rui Martins](https://github.com/ruimartins23/xm6-control). Historic Swift module names (`SonyHeadphonesKit`, `XM6Control`) are kept to limit churn; only the visible product is generic: **XM Control**.
+I vibe-coded this on top of an open-source project — I don't remember the exact name, sorry — credit to the original author is kept and the MIT license with it. Feel free to fork it and make your own version, honestly that's the point.
 
-> Note: the app UI is currently in French. The README below is in English — French version here: [README.fr.md](README.fr.md). English UI contributions welcome.
+## How I actually use it
 
-## Install in 2 minutes
+1. **Cinema mode for movies on my laptop.** One click in the menu bar (or `⌘⌥3`). The app tells you if the headset really confirmed it or not, so no more guessing whether it worked.
+2. **When my phone steals the connection.** You can see which device is playing, pause the other one, hit **Use** on the Mac and you're back. No more digging through Bluetooth settings.
+3. **EQs without opening another app.** Sony presets plus the 10-band sliders, and two one-tap buttons I added: **Film** (full but clear, for shows) and **Voice** (cuts the rumble, pushes dialogue — great for podcasts and calls).
 
-Requirements: macOS 13+, Apple tools with **Swift 6** (`swift --version`).
+## Install — no tech skills needed (2 minutes)
+
+1. Download the **[DMG above](https://github.com/elio-bernardinello/xm-control/releases/download/v1.0/XM-Control-1.0.dmg)** and open it.
+2. Drag **XM Control** into **Applications**, then open it from there.
+3. **First launch, macOS will complain** — totally normal, the app isn't notarized by Apple. Don't double-click it: **right-click (or Ctrl-click) XM Control → Open → Open**. You only do this once.
+4. When macOS asks, **allow Bluetooth access** — otherwise the app can't talk to your headset.
+5. Make sure your headset is paired in **System Settings → Bluetooth** and turned on.
+6. If it's already connected for sound, the app joins it by itself within seconds. Otherwise hit **Connect** — it asks macOS to bring the Bluetooth link up first.
+7. Open **XM Control → Settings…** (`⌘,`) and set your headset name (mine says `Elio's XM6` — put whatever you like, `My XM6`, `XM4`…) and your model. Done.
+
+If it says the headset isn't responding: turn the headset off and on, check it's connected in System Settings, then hit Connect again. Forgetting + re-pairing is a last resort.
+
+> Heads-up: the app itself speaks French for now (I'm French 🙂). This guide is in English, the [French README is here](README.fr.md). English UI help is very welcome.
+
+## Make it yours
+
+In **Settings…** (`⌘,`):
+
+- **Headset display name** — free text shown everywhere (`My XM6`, `Marie's XM6`…). Empty = `My headset`.
+- **First name (optional)** — stored on your Mac only, never sent anywhere.
+- **Model** — `Automatic`, `XM4`, `XM5`, `XM6`. Helps when several XM headsets are paired.
+- **Tracked headset** — pick from your paired XM devices, or leave Automatic. A remembered headset stays remembered even after a rename.
+
+It recognizes `WH-1000XM4` / `XM5` / `XM6` and any custom name with `XM4`/`XM5`/`XM6` in it. One match → picked. Several → it asks you instead of guessing.
+
+Shortcuts when the app is active and connected: `⌘⌥1` Standard, `⌘⌥2` Background Music, `⌘⌥3` Cinema.
+
+## Good to know
+
+- Bluetooth control and Mac audio output are two different things: music playing doesn't mean the control session is up. The app only treats a setting as done when the headset confirms it.
+- `Loading…` then `not reported` just means your model didn't report that feature (common on XM4/XM5 for a few items) — not a bug.
+- The log is off by default (`~/Library/Application Support/XM Control/protocol.log`). It can contain device names, so check before sharing.
+- No Sony pictures inside — the headset drawing is a built-in illustration. You can drop your own local `headphones.png` in Application Support if you want (see ImageCredits.txt). Please don't publish Sony visuals without rights.
+- Independent project, not affiliated with or endorsed by Sony or Apple.
+
+## For developers
 
 ```sh
 git clone https://github.com/elio-bernardinello/xm-control.git
 cd xm-control
-swift test
+swift test          # 47 tests, mocked transport, no headset needed
 ./Scripts/build_app.sh
 open ".build/XM Control.app"
 ```
 
-1. Pair your headset in **System Settings → Bluetooth** and turn it on.
-2. On first launch, allow Bluetooth access when macOS asks.
-3. If your headset is already connected for audio, the app joins it automatically within seconds. Otherwise hit **Connect**.
-4. Open **XM Control → Settings…** (`⌘,`) to set your display name, e.g. `Marie's XM6`, and pick your model.
+macOS 13+, Swift 6. Bundle id `app.xmcontrol`. Signed with your own cert if present, else ad-hoc (`XM_SIGN_IDENTITY` to force). Not notarized.
 
-No account, no server, everything stays on your Mac. Bundle id: `app.xmcontrol`. The local build is signed with your own `Apple Development` cert if present, else `XMDev`, else ad-hoc (`XM_SIGN_IDENTITY` to force one). It is not notarized for Apple distribution.
+[Architecture](Documentation/Architecture.md) · [Verification](Documentation/Verification.md) — French for now, translations welcome.
 
-## Personalization
+## Credits
 
-In **XM Control → Settings…** (`⌘,`):
-
-- **Headset display name**: free text, e.g. `Marie's XM6`, `My XM6`, `XM4`. Shown in the window, menu and announcements. Empty by default (`My headset`).
-- **Your first name (optional)**: stored locally only, never sent anywhere.
-- **Model**: `Automatic`, `XM4`, `XM5`, `XM6`. Helps when several XM headsets are paired.
-- **Tracked headset**: list of paired XM devices + `Automatic`. The remembered address wins even after a rename. `Forget remembered headset` restarts detection.
-
-Auto-detection recognizes:
-`WH-1000XM4`, `WH-1000XM5`, `WH-1000XM6` and any custom name containing `XM4` / `XM5` / `XM6` (e.g. `My XM6`). Single candidate → picked. Several → explicit choice required, nothing is guessed.
-
-## Usage
-
-- Pair in **System Settings → Bluetooth**, turn the headset on, allow Bluetooth on first launch.
-- The app tries the remembered headset or the single XM candidate. If already connected for audio, the Sony session is joined automatically (no click) within seconds and on foreground return.
-- If paired but not connected, **Connect** first asks macOS to bring the Bluetooth link up, then opens the Sony session.
-- Settings appear once the session is up. Menu bar: listening modes, battery, noise control. Main window: full settings.
-- **Settings…** holds menu-bar-only mode and diagnostics. The mini panel is a small headset remote, no audio playback controls.
-- Shortcuts `⌘⌥1`, `⌘⌥2`, `⌘⌥3`: Standard, Background Music, Cinema (app active + connected).
-
-Command Bluetooth is separate from macOS audio output: audible music does not guarantee the control session is up. A selection must be confirmed by headset replies; on failure, check the link and retry.
-
-## 2-minute how-it-works
-
-1. **Click-free connect.** Turn on the paired headset: if connected for macOS audio, the app joins alone in seconds (same on foreground return). Otherwise **Connect** brings Bluetooth up first, then opens the Sony session.
-2. **Cinema mode for a movie on your Mac.** Menu bar → **Cinema** (or `⌘⌥3`). The UI shows `requested` / `confirmed by headset` / `not confirmed`: only confirmed counts for sound. No confirmation → check the link and retry.
-3. **Phone stole the connection?** **Audio source** card: current playback is marked `Active`. Pause the other device, hit **Use** on the Mac. If the iPhone instantly resumes, pause it again and retry — the app tells you.
-4. **EQs at hand.** Sony presets + 10-band sliders + 2 shortcuts:
-   - **Film**: full bass, dialogue kept — for movies/series.
-   - **Voice**: rumble cut, 500 Hz–2 kHz pushed — for dialogue, podcasts, calls.
-   One click applies the curve (headset switches to `Custom`). Sliders stay editable after.
-5. **Yours.** Settings: display name, model, tracked headset. Nothing ever leaves your Mac.
-
-FAQ: `Loading…` then `not reported` = the headset didn't report it (normal on XM4/XM5 for some features). `Headset not responding` = link lost: turn on, reconnect macOS audio, then **Connect**. Logging off by default.
-
-## Build
-
-```sh
-swift test
-./Scripts/build_app.sh        # release by default
-./Scripts/build_app.sh debug
-```
-
-Produces a standalone `.build/XM Control.app` in a temp dir, verifies it, then replaces only its own build product. Never launches or replaces an installed app.
-
-[Architecture](Documentation/Architecture.md) · [Verification](Documentation/Verification.md) — docs currently in French, translation welcome.
-
-## Capabilities and limits (XM4 / XM5 / XM6)
-
-Noise control, ambient level, listening modes + room size, EQ, battery, multipoint, Speak-to-Chat, wear detection, auto power off: each is shown only if the headset really reports it. `Loading…` then `not reported` means the model/firmware didn't confirm it, not a display bug.
-
-- Shared protocol (Sony "v2" transport used by XM5/XM6) implemented; XM4 works as a compatible subset.
-- BGM / Cinema and some fine settings were first validated on XM6: on XM4/XM5 they may stay unavailable depending on headset replies.
-- Automated tests simulate protocol and sessions; they prove neither acoustic effect nor real Bluetooth reliability. Validate each generation with its headset. No CPU / battery / latency claims without measurement.
-
-## Troubleshooting
-
-No response → check System Settings connection, retry from its card. Disconnect/reconnect in macOS if needed. Forget + re-pair is a last resort.
-
-Optional log, off by default: `~/Library/Application Support/XM Control/protocol.log`. May contain names/addresses: review before sharing. Settings opens its folder. A connection must never silently change your headset settings.
-
-## Origin, images, license
-
-Code: [MIT + original attribution to Rui Martins](LICENSE). Protocol refs: [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge), [SonyHeadphonesClient](https://github.com/Plutoberth/SonyHeadphonesClient) and [mos9527's fork](https://github.com/mos9527/SonyHeadphonesClient). No guarantee on every command.
-
-**No Sony image included.** UI uses a vector illustration. See [ImageCredits.txt](Sources/XM6Control/Resources/ImageCredits.txt) to add your own local `headphones.png` (not redistributed). Never publish Sony visuals without rights.
-
-XM Control is independent from Sony and Apple, no affiliation or endorsement. Brands belong to their owners.
+MIT + original attribution to [Rui Martins (XM6 Control)](https://github.com/ruimartins23/xm6-control) kept in [LICENSE](LICENSE). Protocol references: [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge), [SonyHeadphonesClient](https://github.com/Plutoberth/SonyHeadphonesClient) and [mos9527's fork](https://github.com/mos9527/SonyHeadphonesClient). No guarantee on every command.
