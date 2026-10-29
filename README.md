@@ -6,7 +6,7 @@ It works with **Sony WH-1000XM4 / XM5 / XM6**, with **Standard / Background Musi
 
 ### ⬇️ Download
 
-**[Download XM-Control-1.1.dmg](https://github.com/elio-bernardinello/xm-control/releases/download/v1.0/XM-Control-1.1.dmg)** (2.1 MB, macOS 13+)
+**[Download XM-Control-1.1.dmg](https://github.com/elio-bernardinello/xm-control/releases/download/v1.1/XM-Control-1.1.dmg)** (2.1 MB, macOS 13+)
 
 No account, no server, everything stays on your Mac.
 
@@ -25,7 +25,7 @@ I vibe-coded this on top of an open-source project — I don't remember the exac
 
 ## Install — no tech skills needed (2 minutes)
 
-1. Download the **[DMG above](https://github.com/elio-bernardinello/xm-control/releases/download/v1.0/XM-Control-1.1.dmg)** and open it.
+1. Download the **[DMG above](https://github.com/elio-bernardinello/xm-control/releases/download/v1.1/XM-Control-1.1.dmg)** and open it.
 2. Drag **XM Control** into **Applications**, then open it from there.
 3. **First launch, macOS will complain** — totally normal, the app isn't notarized by Apple. Don't double-click it: **right-click (or Ctrl-click) XM Control → Open → Open**. You only do this once.
 4. When macOS asks, **allow Bluetooth access** — otherwise the app can't talk to your headset.

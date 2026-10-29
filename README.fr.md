@@ -9,7 +9,7 @@ Une application macOS native pour piloter les casques **Sony WH-1000XM4 / XM5 / 
 
 ### ⬇️ Télécharger
 
-**[Télécharger XM-Control-1.1.dmg](https://github.com/elio-bernardinello/xm-control/releases/download/v1.0/XM-Control-1.1.dmg)** (2,1 Mo, macOS 13+) — ouvrez le DMG, glissez dans Applications, puis **clic droit → Ouvrir** la première fois (app non notariée, normal). Autorisez le Bluetooth, jumelé dans Réglages Système → Bluetooth, puis Se connecter.
+**[Télécharger XM-Control-1.1.dmg](https://github.com/elio-bernardinello/xm-control/releases/download/v1.1/XM-Control-1.1.dmg)** (2,1 Mo, macOS 13+) — ouvrez le DMG, glissez dans Applications, puis **clic droit → Ouvrir** la première fois (app non notariée, normal). Autorisez le Bluetooth, jumelé dans Réglages Système → Bluetooth, puis Se connecter.
 
 Dérivée de [XM6 Control, par Rui Martins](https://github.com/ruimartins23/xm6-control). Les noms de modules Swift historiques (`SonyHeadphonesKit`, `XM6Control`) sont conservés pour limiter les changements ; seul le produit visible est générique : **XM Control**.
 
