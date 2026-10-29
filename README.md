@@ -1,79 +1,96 @@
 # XM Control
 
-Une application macOS native pour piloter les casques **Sony WH-1000XM4 / XM5 / XM6**, avec un accès direct à **Standard / Musique de fond / Cinéma** depuis la barre des menus.
+A native macOS app for **Sony WH-1000XM4 / XM5 / XM6**, with **Standard / Background Music / Cinema** right from the menu bar.
 
-Dérivée de [XM6 Control, par Rui Martins](https://github.com/ruimartins23/xm6-control). Les noms de modules Swift historiques (`SonyHeadphonesKit`, `XM6Control`) sont conservés pour limiter les changements ; seul le produit visible est générique : **XM Control**.
+Forked from [XM6 Control by Rui Martins](https://github.com/ruimartins23/xm6-control). Historic Swift module names (`SonyHeadphonesKit`, `XM6Control`) are kept to limit churn; only the visible product is generic: **XM Control**.
 
-## Personnalisation
+> Note: the app UI is currently in French. The README below is in English — French version here: [README.fr.md](README.fr.md). English UI contributions welcome.
 
-Dans **XM Control → Réglages…** (`⌘,`) :
+## Install in 2 minutes
 
-- **Nom affiché du casque** : texte libre, par ex. `Casque de Marie`, `Mon XM6`, `XM4`. Affiché dans la fenêtre, le menu et les annonces. Vide par défaut (`Mon casque`).
-- **Votre prénom (optionnel)** : stocké localement uniquement, jamais envoyé.
-- **Modèle** : `Automatique`, `XM4`, `XM5`, `XM6`. Aide à choisir quand plusieurs casques XM sont jumelés.
-- **Casque suivi** : liste des appareils XM jumelés + `Automatique`. L’adresse mémorisée reste prioritaire même après un renommage. `Oublier le casque mémorisé` relance la détection.
-
-La détection automatique reconnaît :
-`WH-1000XM4`, `WH-1000XM5`, `WH-1000XM6` et tout nom personnalisé contenant `XM4` / `XM5` / `XM6` (ex. `Mon XM6`). S’il ne reste qu’un seul candidat, il est choisi. S’il y en a plusieurs, l’app demande un choix explicite au lieu d’en inventer un.
-
-## Utilisation
-
-- Jumeler le casque dans **Réglages Système → Bluetooth**, l’allumer et autoriser le Bluetooth au premier lancement.
-- L’app tente de rejoindre le casque mémorisé ou le seul candidat XM. Si le casque est déjà connecté en audio, la session Sony est rejointe automatiquement (sans clic) en quelques secondes et au retour au premier plan.
-- Si le casque est jumelé mais non connecté, **Se connecter** demande d’abord à macOS d’établir la liaison Bluetooth, puis ouvre la session Sony.
-- Les réglages s’ouvrent une fois la session établie. La barre des menus donne accès aux modes d’écoute, à la batterie et à la réduction de bruit ; la fenêtre principale regroupe les réglages détaillés.
-- **XM Control → Réglages…** contient le mode « Barre des menus uniquement » et le diagnostic. Le mini-panneau est un petit contrôle du casque, sans commande de lecture audio.
-- Raccourcis `⌘⌥1`, `⌘⌥2`, `⌘⌥3` : Standard, Musique de fond, Cinéma (app active et connectée).
-
-La connexion de commande Bluetooth est distincte de la sortie audio macOS : une musique audible ne garantit pas que le casque accepte déjà une session de contrôle. Une sélection envoyée doit être confirmée par les réponses du casque ; en cas d’échec, vérifier la connexion avant de réessayer.
-
-## Guide de fonctionnement en 2 minutes
-
-1. **Connexion sans clic.** Allumez le casque déjà jumelé : s’il est connecté en audio macOS, l’app le rejoint seule en quelques secondes (pareil au retour premier plan). Sinon, **Se connecter** demande d’abord à macOS d’établir le Bluetooth, puis ouvre la session Sony.
-2. **Mode Cinéma pour un film sur Mac.** Barre des menus → **Cinéma** (ou `⌘⌥3`). L’affichage distingue `demandé` / `confirmé par le casque` / `non confirmé` : seul le confirmé compte pour le son. Si ça ne confirme pas, revérifiez la liaison avant de réessayer.
-3. **Le téléphone a volé la connexion ?** Carte **Source audio** : la lecture en cours est marquée `Actif`. Mettez l’autre appareil en pause, touchez **Utiliser** sur le Mac. Si l’iPhone rejoue aussitôt, remettez-le en pause puis recommencez — l’app vous le dit.
-4. **Égaliseurs à portée de main.** Presets Sony + curseurs 10 bandes + 2 raccourcis :
-   - **Film** : basses présentes, dialogues maintenus — pour films/séries.
-   - **Voix** : ronron coupé, 500 Hz–2 kHz poussés — pour dialogues, podcasts, appels.
-   Un clic applique la courbe (le casque bascule en `Personnalisé`). Les curseurs restent éditables après.
-5. **Perso.** Réglages : nom affiché (`Casque de Marie`), modèle, casque suivi. Rien n’est envoyé nulle part.
-
-FAQ : `Chargement…` puis `non communiqué` = le casque ne l’a pas rapporté (normal sur XM4/XM5 pour certaines fonctions). `Le casque ne répond pas` = lien perdu : rallumez, reconnectez en audio macOS, puis **Se connecter**. Journal désactivé par défaut.
-
-## Construire
-
-macOS 13 minimum et outils Apple compatibles avec **Swift 6** (`swift --version`).
+Requirements: macOS 13+, Apple tools with **Swift 6** (`swift --version`).
 
 ```sh
+git clone https://github.com/elio-bernardinello/xm-control.git
+cd xm-control
 swift test
 ./Scripts/build_app.sh
 open ".build/XM Control.app"
 ```
 
-Le script produit une application autonome dans `.build/XM Control.app`. Il assemble les fichiers dans un dossier temporaire, vérifie la signature, puis remplace uniquement son produit de compilation. Il ne lance rien et ne remplace aucune application installée. Identifiant : `app.xmcontrol`.
+1. Pair your headset in **System Settings → Bluetooth** and turn it on.
+2. On first launch, allow Bluetooth access when macOS asks.
+3. If your headset is already connected for audio, the app joins it automatically within seconds. Otherwise hit **Connect**.
+4. Open **XM Control → Settings…** (`⌘,`) to set your display name, e.g. `Marie's XM6`, and pick your model.
 
-La signature utilise votre certificat `Apple Development` s’il existe, sinon `XMDev`, sinon ad hoc (`XM_SIGN_IDENTITY` pour forcer). Une nouvelle compilation peut redemander l’autorisation Bluetooth. Ce paquet local n’est pas signé ni notarié pour distribution Apple.
+No account, no server, everything stays on your Mac. Bundle id: `app.xmcontrol`. The local build is signed with your own `Apple Development` cert if present, else `XMDev`, else ad-hoc (`XM_SIGN_IDENTITY` to force one). It is not notarized for Apple distribution.
 
-[Architecture](Documentation/Architecture.md) · [Livraison et vérification](Documentation/Verification.md)
+## Personalization
 
-## Capacités et limites (XM4 / XM5 / XM6)
+In **XM Control → Settings…** (`⌘,`):
 
-Réduction de bruit, son ambiant et niveau, modes d’écoute et distance des enceintes, égaliseur, batterie, multipoint, Speak-to-Chat, détection du port, extinction automatique : chaque fonction n’est affichée que si le casque la rapporte vraiment. `Chargement…` puis `non communiqué` signifie que le modèle ou le firmware ne l’a pas confirmée, pas un bug d’affichage.
+- **Headset display name**: free text, e.g. `Marie's XM6`, `My XM6`, `XM4`. Shown in the window, menu and announcements. Empty by default (`My headset`).
+- **Your first name (optional)**: stored locally only, never sent anywhere.
+- **Model**: `Automatic`, `XM4`, `XM5`, `XM6`. Helps when several XM headsets are paired.
+- **Tracked headset**: list of paired XM devices + `Automatic`. The remembered address wins even after a rename. `Forget remembered headset` restarts detection.
 
-- Le protocole partagé (transport Sony « v2 », utilisé par XM5/XM6) est implémenté ; XM4 fonctionne en sous-ensemble compatible.
-- BGM / Cinéma et certains réglages fins sont d’abord validés XM6 : sur XM4/XM5, ils peuvent rester indisponibles selon les réponses du casque.
-- Les tests automatisés simulent protocole et sessions ; ils ne prouvent ni l’effet acoustique ni la fiabilité d’un lien Bluetooth réel. Valider chaque génération avec son casque via la grille de vérification. Aucune valeur CPU / conso / latence garantie sans mesure.
+Auto-detection recognizes:
+`WH-1000XM4`, `WH-1000XM5`, `WH-1000XM6` and any custom name containing `XM4` / `XM5` / `XM6` (e.g. `My XM6`). Single candidate → picked. Several → explicit choice required, nothing is guessed.
 
-## Diagnostic
+## Usage
 
-Si le casque ne répond pas, vérifier sa connexion dans Réglages Système, puis retenter depuis sa carte. Déconnecter puis reconnecter dans macOS si besoin. L’oubli et le nouvel appairage restent un dernier recours.
+- Pair in **System Settings → Bluetooth**, turn the headset on, allow Bluetooth on first launch.
+- The app tries the remembered headset or the single XM candidate. If already connected for audio, the Sony session is joined automatically (no click) within seconds and on foreground return.
+- If paired but not connected, **Connect** first asks macOS to bring the Bluetooth link up, then opens the Sony session.
+- Settings appear once the session is up. Menu bar: listening modes, battery, noise control. Main window: full settings.
+- **Settings…** holds menu-bar-only mode and diagnostics. The mini panel is a small headset remote, no audio playback controls.
+- Shortcuts `⌘⌥1`, `⌘⌥2`, `⌘⌥3`: Standard, Background Music, Cinema (app active + connected).
 
-Le journal est optionnel et désactivé par défaut : `~/Library/Application Support/XM Control/protocol.log`. Il peut contenir noms et adresses : le relire avant tout partage. Le menu Réglages permet d’ouvrir son dossier. Une connexion ne doit jamais changer silencieusement vos réglages du casque.
+Command Bluetooth is separate from macOS audio output: audible music does not guarantee the control session is up. A selection must be confirmed by headset replies; on failure, check the link and retry.
 
-## Origine, images et licence
+## 2-minute how-it-works
 
-Code : [licence MIT et attribution originale à Rui Martins](LICENSE). Références protocole : [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge), [SonyHeadphonesClient](https://github.com/Plutoberth/SonyHeadphonesClient) et [son fork mos9527](https://github.com/mos9527/SonyHeadphonesClient). Sans garantie sur chaque commande.
+1. **Click-free connect.** Turn on the paired headset: if connected for macOS audio, the app joins alone in seconds (same on foreground return). Otherwise **Connect** brings Bluetooth up first, then opens the Sony session.
+2. **Cinema mode for a movie on your Mac.** Menu bar → **Cinema** (or `⌘⌥3`). The UI shows `requested` / `confirmed by headset` / `not confirmed`: only confirmed counts for sound. No confirmation → check the link and retry.
+3. **Phone stole the connection?** **Audio source** card: current playback is marked `Active`. Pause the other device, hit **Use** on the Mac. If the iPhone instantly resumes, pause it again and retry — the app tells you.
+4. **EQs at hand.** Sony presets + 10-band sliders + 2 shortcuts:
+   - **Film**: full bass, dialogue kept — for movies/series.
+   - **Voice**: rumble cut, 500 Hz–2 kHz pushed — for dialogue, podcasts, calls.
+   One click applies the curve (headset switches to `Custom`). Sliders stay editable after.
+5. **Yours.** Settings: display name, model, tracked headset. Nothing ever leaves your Mac.
 
-**Aucune image Sony incluse.** L’interface utilise une illustration vectorielle. Voir [ImageCredits.txt](Sources/XM6Control/Resources/ImageCredits.txt) pour ajouter votre propre `headphones.png` locale (non redistribuée). Ne publiez jamais de visuel Sony sans droit.
+FAQ: `Loading…` then `not reported` = the headset didn't report it (normal on XM4/XM5 for some features). `Headset not responding` = link lost: turn on, reconnect macOS audio, then **Connect**. Logging off by default.
 
-XM Control est indépendant de Sony et d’Apple, sans affiliation ni approbation. Marques et visuels appartiennent à leurs titulaires.
+## Build
+
+```sh
+swift test
+./Scripts/build_app.sh        # release by default
+./Scripts/build_app.sh debug
+```
+
+Produces a standalone `.build/XM Control.app` in a temp dir, verifies it, then replaces only its own build product. Never launches or replaces an installed app.
+
+[Architecture](Documentation/Architecture.md) · [Verification](Documentation/Verification.md) — docs currently in French, translation welcome.
+
+## Capabilities and limits (XM4 / XM5 / XM6)
+
+Noise control, ambient level, listening modes + room size, EQ, battery, multipoint, Speak-to-Chat, wear detection, auto power off: each is shown only if the headset really reports it. `Loading…` then `not reported` means the model/firmware didn't confirm it, not a display bug.
+
+- Shared protocol (Sony "v2" transport used by XM5/XM6) implemented; XM4 works as a compatible subset.
+- BGM / Cinema and some fine settings were first validated on XM6: on XM4/XM5 they may stay unavailable depending on headset replies.
+- Automated tests simulate protocol and sessions; they prove neither acoustic effect nor real Bluetooth reliability. Validate each generation with its headset. No CPU / battery / latency claims without measurement.
+
+## Troubleshooting
+
+No response → check System Settings connection, retry from its card. Disconnect/reconnect in macOS if needed. Forget + re-pair is a last resort.
+
+Optional log, off by default: `~/Library/Application Support/XM Control/protocol.log`. May contain names/addresses: review before sharing. Settings opens its folder. A connection must never silently change your headset settings.
+
+## Origin, images, license
+
+Code: [MIT + original attribution to Rui Martins](LICENSE). Protocol refs: [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge), [SonyHeadphonesClient](https://github.com/Plutoberth/SonyHeadphonesClient) and [mos9527's fork](https://github.com/mos9527/SonyHeadphonesClient). No guarantee on every command.
+
+**No Sony image included.** UI uses a vector illustration. See [ImageCredits.txt](Sources/XM6Control/Resources/ImageCredits.txt) to add your own local `headphones.png` (not redistributed). Never publish Sony visuals without rights.
+
+XM Control is independent from Sony and Apple, no affiliation or endorsement. Brands belong to their owners.
