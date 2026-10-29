@@ -1,12 +1,11 @@
 # XM Control
 
-![XM Control hero](screenshots/hero.png)
-
 A native macOS app for **Sony WH-1000XM4 / XM5 / XM6**, with **Standard / Background Music / Cinema** right from the menu bar.
 
-![Main window preview](screenshots/app-main.png)
-![Menu bar Cinema preview](screenshots/menu-cinema.png)
-*Illustrated previews — native macOS UI, no Sony photos included.*
+![Main window — Cinema confirmed, source list, Film/Voice EQ](screenshots/real-main-light.png)
+![Menu bar popover — Cinema + EQ shortcuts](screenshots/real-menu-light.png)
+![Settings — display name, model, tracked headset](screenshots/real-prefs.png)
+*Real app UI rendered with sample data. Dark mode supported ([main-dark](screenshots/real-main-dark.png)). No Sony photos included.*
 
 Forked from [XM6 Control by Rui Martins](https://github.com/ruimartins23/xm6-control). Historic Swift module names (`SonyHeadphonesKit`, `XM6Control`) are kept to limit churn; only the visible product is generic: **XM Control**.
 

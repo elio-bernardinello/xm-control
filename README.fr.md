@@ -1,12 +1,11 @@
 # XM Control
 
-![Visuel XM Control](screenshots/hero.png)
-
 Une application macOS native pour piloter les casques **Sony WH-1000XM4 / XM5 / XM6**, avec un accès direct à **Standard / Musique de fond / Cinéma** depuis la barre des menus.
 
-![Aperçu fenêtre principale](screenshots/app-main.png)
-![Aperçu menu Cinéma](screenshots/menu-cinema.png)
-*Aperçus illustrés — interface macOS native, aucune photo Sony incluse.*
+![Fenêtre principale — Cinéma confirmé, sources, EQ Film/Voix](screenshots/real-main-light.png)
+![Popover barre des menus — Cinéma + raccourcis EQ](screenshots/real-menu-light.png)
+![Réglages — nom affiché, modèle, casque suivi](screenshots/real-prefs.png)
+*Vraie interface rendue avec données d’exemple. Mode sombre pris en charge ([main-dark](screenshots/real-main-dark.png)). Aucune photo Sony incluse.*
 
 Dérivée de [XM6 Control, par Rui Martins](https://github.com/ruimartins23/xm6-control). Les noms de modules Swift historiques (`SonyHeadphonesKit`, `XM6Control`) sont conservés pour limiter les changements ; seul le produit visible est générique : **XM Control**.
 
