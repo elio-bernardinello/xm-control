@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>XM Control</string>
+	<key>CFBundleDisplayName</key>
+	<string>XM Control</string>
+	<key>CFBundleIdentifier</key>
+	<string>app.xmcontrol</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>fr</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleExecutable</key>
+	<string>XM6Control</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>13.0</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
+	<key>CFBundleIconFile</key>
+	<string>XMIcon</string>
+	<!-- Deliberately a normal app: launching it shows a real window and a Dock icon.
+	     Menu-bar-only mode is a user preference applied at runtime via
+	     NSApplication.setActivationPolicy(.accessory), so it can be turned on and off
+	     without reinstalling. Baking LSUIElement=true in here made the window
+	     impossible to show on launch. -->
+	<key>LSUIElement</key>
+	<false/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>XM Control se connecte à votre casque Sony par Bluetooth pour lire la batterie et régler les modes d’écoute et la réduction de bruit.</string>
+	<key>LSApplicationSecondaryUIElement</key>
+	<false/>
+</dict>
+</plist>

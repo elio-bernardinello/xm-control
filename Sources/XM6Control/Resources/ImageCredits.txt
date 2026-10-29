@@ -1,0 +1,16 @@
+XM Control — images et crédits.
+
+Aucune photo produit Sony n'est incluse dans ce dépôt open source.
+L'interface utilise une illustration vectorielle intégrée (HeadphoneIllustration).
+
+Pour utiliser votre propre photo locale (non redistribuée) :
+1. Placez un fichier `headphones.png` dans
+   `~/Library/Application Support/XM Control/`
+   (l'ancien dossier `XM6 Control/` est aussi recherché pour migration).
+2. Relancez l'application.
+
+N'incluez jamais de visuel Sony dans un fork public sans droit de redistribution.
+L'icône de l'application est générée localement par `Scripts/make_icon.swift`
+(symbole système, aucune ressource tiers).
+
+Code : licence MIT, voir LICENSE (attribution d'origine conservée).
